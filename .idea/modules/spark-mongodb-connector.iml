@@ -23,11 +23,26 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/test" type="java-test-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.4" level="project" />
+    <orderEntry type="library" name="SBT: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" name="SBT: de.flapdoodle.embed:de.flapdoodle.embed.mongo:1.46.1" level="project" />
+    <orderEntry type="library" name="SBT: de.flapdoodle.embed:de.flapdoodle.embed.process:1.40.0" level="project" />
+    <orderEntry type="library" name="SBT: net.java.dev.jna:jna:4.0.0" level="project" />
+    <orderEntry type="library" name="SBT: net.java.dev.jna:jna-platform:4.0.0" level="project" />
+    <orderEntry type="library" name="SBT: org.apache.commons:commons-compress:1.3" level="project" />
+    <orderEntry type="library" name="SBT: org.apache.commons:commons-lang3:3.1" level="project" />
+    <orderEntry type="library" name="SBT: com.github.nscala-time:nscala-time_2.10:1.0.0" level="project" />
+    <orderEntry type="library" name="SBT: joda-time:joda-time:2.3" level="project" />
+    <orderEntry type="library" name="SBT: org.joda:joda-convert:1.2" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:casbah-commons_2.10:2.7.3" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:casbah-core_2.10:2.7.3" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:casbah-gridfs_2.10:2.7.3" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:casbah-query_2.10:2.7.3" level="project" />
+    <orderEntry type="library" name="SBT: org.mongodb:mongo-java-driver:2.12.3" level="project" />
+    <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.6.0" level="project" />
   </component>
 </module>
 
