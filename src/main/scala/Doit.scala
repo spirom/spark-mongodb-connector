@@ -4,12 +4,17 @@ import org.apache.spark.{SparkContext, SparkConf}
 import connector._
 
 class MongoReader {
-  val conf = new SparkConf().setAppName("MongoReader").setMaster("local[4]")
+  val conf = new SparkConf().setAppName("MongoReader").setMaster("local[4]").set("spark.mongo.connection.host", "127.0.0.1").set("spark.mongo.connection.port", "12345")
   val sc = new SparkContext(conf)
 
   def read() : Unit = {
-    val data = sc.mongoCollection("testCollection")
+    // TODO: shouldn't need to use the type parameter below: something may be broken
+    val data = sc.mongoCollection[MongoDBObject]("local", "testCollection")
     println("count = " + data.count())
+    data.foreach(o => {
+      println("<<< " + o + " >>>")
+    }
+    )
   }
 }
 
@@ -18,7 +23,6 @@ object Doit {
 
   def  main (args: Array[String]) {
 
-    /*
     val em = new EmbeddedMongo()
 
     val mongoClient = MongoClient("localhost", em.getPort())
@@ -33,10 +37,10 @@ object Doit {
     col.foreach(println)
 
     // TODO: make sure it's actually in the database
-    */
+
     val mr = new MongoReader()
     mr.read()
 
-    //em.stop();
+    em.stop()
   }
 }

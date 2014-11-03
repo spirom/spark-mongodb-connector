@@ -12,8 +12,8 @@ import scala.reflect.ClassTag
 
 class ContextFunctions(@transient val sc: SparkContext) extends Serializable {
 
-  def mongoCollection[T](collection: String)
-                       (implicit connector: MongoConnector = new MongoConnector,
+  def mongoCollection[T](databaseName: String, collectionName: String)
+                       (implicit connector: MongoConnector = MongoConnector(sc.getConf),
                         ct: ClassTag[T]) =
-    new MongoRDD[T](sc, connector)
+    new MongoRDD[T](sc, connector, databaseName, collectionName)
 }

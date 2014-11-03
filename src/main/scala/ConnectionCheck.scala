@@ -5,7 +5,7 @@ object ConnectionCheck {
     val em = new EmbeddedMongo()
 
 
-    val mongoClient = MongoClient("localhost", em.getPort())
+    val mongoClient = MongoClient("127.0.0.1", em.getPort())
     mongoClient.dbNames().foreach(println)
 
     val db = mongoClient.getDB("local")

@@ -1,5 +1,6 @@
 package connector.rdd
 
+import com.mongodb.casbah.Imports._
 import connector.mongo.MongoConnector
 
 import java.io.IOException
@@ -16,7 +17,9 @@ import scala.reflect.ClassTag
 
   class MongoRDD[R] private[connector] (
                                              @transient sc: SparkContext,
-                                             val connector: MongoConnector
+                                             val connector: MongoConnector,
+                                             val databaseName: String,
+                                             val collectionName: String
                                          )(
                                              implicit
                                              ct : ClassTag[R])
@@ -33,7 +36,7 @@ import scala.reflect.ClassTag
 
 
     override def compute(split: Partition, context: TaskContext): Iterator[R] = {
-      Seq[R]().iterator
+      connector.getCollection(databaseName, collectionName).asInstanceOf[Iterator[R]]
     }
 
   }
