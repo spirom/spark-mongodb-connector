@@ -7,9 +7,6 @@ import org.apache.spark.SparkContext
 
 import scala.reflect.ClassTag
 
-
-
-
 class ContextFunctions(@transient val sc: SparkContext) extends Serializable {
 
   def mongoCollection[T](databaseName: String, collectionName: String)
