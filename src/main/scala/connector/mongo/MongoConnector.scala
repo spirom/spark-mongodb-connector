@@ -13,10 +13,24 @@ class MongoConnector(conf: MongoConnectorConf) extends Serializable {
     col.iterator.map(e => e)
   }
 
+
+
 }
 
 object MongoConnector {
   def apply(conf: SparkConf): MongoConnector = {
     new MongoConnector(MongoConnectorConf(conf))
+  }
+
+  def getCollection(databaseName: String, collectionName: String, interval: MongoInterval): Iterator[DBObject] = {
+    val mongoClient = MongoClient(interval.destination.host, interval.destination.port)
+    // TODO: deal with credentials
+    val db = mongoClient.getDB(databaseName)
+    val col = db(collectionName)
+
+    val cursor = col.find()
+    val withMin = if (interval.min == null || interval.min.values.size == 0) cursor else cursor.addSpecial("$min", interval.min)
+    val withMax = if (interval.max == null || interval.max.values.size == 0) withMin else cursor.addSpecial("$max", interval.max)
+    withMax.toIterator
   }
 }

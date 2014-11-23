@@ -7,8 +7,6 @@ import org.bson.types.{MaxKey, MinKey}
 
 import scala.collection.mutable
 
-case class Chunk(id: String, ns:String, shard:String, instance:String)
-
 import scala.collection.JavaConversions._
 
 class IntervalGenerator(client: MongoClient, collectionName: String) {
@@ -16,7 +14,7 @@ class IntervalGenerator(client: MongoClient, collectionName: String) {
   private val MIN_KEY_TYPE = new MinKey()
   private val MAX_KEY_TYPE = new MaxKey()
 
-  private def makeInterval(lowerBound: BasicDBObject, upperBound: BasicDBObject, host: String): MongoInterval = {
+  private def makeInterval(lowerBound: BasicDBObject, upperBound: BasicDBObject, destination: Destination): MongoInterval = {
     val splitMin:DBObject  = new BasicDBObject()
     if (lowerBound != null) {
       lowerBound.entrySet().iterator().foreach(entry => {
@@ -39,7 +37,7 @@ class IntervalGenerator(client: MongoClient, collectionName: String) {
         }
       })
     }
-    new MongoInterval(splitMin, splitMax, host)
+    new MongoInterval(splitMin, splitMax, destination)
   }
 
   def generate() : Seq[MongoInterval] = {
@@ -58,11 +56,11 @@ class IntervalGenerator(client: MongoClient, collectionName: String) {
 
         shards.get(shardName) match {
           case None => {}
-          case Some(destination) => {
+          case Some(hostPort) => {
             val interval =
               makeInterval(dbo.get("min").asInstanceOf[BasicDBObject],
                 dbo.get("max").asInstanceOf[BasicDBObject],
-                destination)
+                Destination(hostPort))
             intervals.append(interval)
           }
         }
