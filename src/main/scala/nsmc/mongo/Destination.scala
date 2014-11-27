@@ -1,4 +1,4 @@
-package connector.mongo
+package nsmc.mongo
 
 case class Destination(host: String, port: Int) {
 

@@ -1,11 +1,18 @@
-import com.mongodb.casbah.Imports._
+package adhoc
 
-object ConnectionCheck {
+import com.mongodb.casbah.Imports._
+import com.mongodb.casbah.MongoClient
+
+import util.EmbeddedMongo
+
+object Doit {
+
+
   def  main (args: Array[String]) {
+
     val em = new EmbeddedMongo()
 
-
-    val mongoClient = MongoClient("127.0.0.1", em.getPort())
+    val mongoClient = MongoClient("localhost", em.getPort())
     mongoClient.dbNames().foreach(println)
 
     val db = mongoClient.getDB("local")
@@ -16,6 +23,11 @@ object ConnectionCheck {
 
     col.foreach(println)
 
-    em.stop();
+    // TODO: make sure it's actually in the database
+
+    val mr = new MongoReader()
+    mr.read()
+
+    em.stop()
   }
 }

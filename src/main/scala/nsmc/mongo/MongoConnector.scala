@@ -1,4 +1,4 @@
-package connector.mongo
+package nsmc.mongo
 
 import com.mongodb.casbah.Imports._
 import org.apache.spark.SparkConf
@@ -22,6 +22,7 @@ object MongoConnector {
     new MongoConnector(MongoConnectorConf(conf))
   }
 
+  // fetch data fromt he given interval
   def getCollection(databaseName: String, collectionName: String, interval: MongoInterval): Iterator[DBObject] = {
     val mongoClient = MongoClient(interval.destination.host, interval.destination.port)
     // TODO: deal with credentials

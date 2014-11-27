@@ -1,4 +1,4 @@
-package connector.rdd.partitioner
+package nsmc.rdd.partitioner
 
 import org.apache.spark.Partition
 

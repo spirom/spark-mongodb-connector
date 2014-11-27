@@ -1,8 +1,13 @@
+package adhoc
+
 import com.mongodb.casbah.Imports._
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 
-import connector._
+import nsmc._
 
+/**
+ * Created by Spiro on 11/27/2014.
+ */
 class MongoReader {
   //val conf = new SparkConf().setAppName("MongoReader").setMaster("local[4]").set("spark.mongo.connection.host", "127.0.0.1").set("spark.mongo.connection.port", "12345")
   val conf = new SparkConf().setAppName("MongoReader").setMaster("local[4]").set("spark.mongo.connection.host", "54.173.12.232").set("spark.mongo.connection.port", "27017")
@@ -17,32 +22,5 @@ class MongoReader {
       println("<<< " + o + " >>>")
     }
     )
-  }
-}
-
-object Doit {
-
-
-  def  main (args: Array[String]) {
-
-    val em = new EmbeddedMongo()
-
-    val mongoClient = MongoClient("localhost", em.getPort())
-    mongoClient.dbNames().foreach(println)
-
-    val db = mongoClient.getDB("local")
-    val col = db("testCollection")
-    col.drop()
-    col += MongoDBObject("foo" -> 1) ++ ("name" -> "one")
-    col += MongoDBObject("foo" -> 2) ++ ("name" -> "two")
-
-    col.foreach(println)
-
-    // TODO: make sure it's actually in the database
-
-    val mr = new MongoReader()
-    mr.read()
-
-    em.stop()
   }
 }

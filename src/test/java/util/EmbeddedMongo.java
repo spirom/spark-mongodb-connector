@@ -1,3 +1,5 @@
+package util;
+
 import de.flapdoodle.embed.mongo.config.*;
 import de.flapdoodle.embed.mongo.*;
 import de.flapdoodle.embed.mongo.distribution.Version;

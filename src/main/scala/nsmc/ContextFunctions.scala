@@ -1,8 +1,8 @@
-package connector
+package nsmc
 
-import connector.mongo.MongoConnector
+import nsmc.mongo.MongoConnector
 
-import connector.rdd.MongoRDD
+import nsmc.rdd.MongoRDD
 import org.apache.spark.SparkContext
 
 import scala.reflect.ClassTag

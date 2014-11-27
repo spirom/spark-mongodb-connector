@@ -1,4 +1,4 @@
-package connector.mongo
+package nsmc.mongo
 
 import java.net.InetAddress
 

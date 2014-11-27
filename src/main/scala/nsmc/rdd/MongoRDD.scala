@@ -1,11 +1,11 @@
-package connector.rdd
+package nsmc.rdd
 
 import com.mongodb.casbah.Imports._
-import connector.mongo.MongoConnector
+import nsmc.mongo.MongoConnector
 
 import java.io.IOException
 
-import connector.rdd.partitioner.MongoRDDPartitioner
+import nsmc.rdd.partitioner.MongoRDDPartitioner
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 
@@ -15,7 +15,7 @@ import scala.reflect.ClassTag
 
 
 
-  class MongoRDD[R] private[connector] (
+  class MongoRDD[R] private[nsmc] (
                                              @transient sc: SparkContext,
                                              val connector: MongoConnector,
                                              val databaseName: String,
