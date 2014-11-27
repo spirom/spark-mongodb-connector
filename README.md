@@ -1,5 +1,10 @@
 # A Native MongoDB Connector for Apache Spark
 
+This is a native connector for reading and writing MongoDB collections
+directly from Apache Spark. In Spark, the data from MongoDB is represented as an
+
+>    RDD[com.mongodb.casbah.commons.MongoDBObject]
+
 # Current Limitations
 
 - No Java or Python API bindings
@@ -8,5 +13,15 @@
 -- MongoDB: 2.6
 -- Scala: 2.10
 -- Spark: 1.1.0
+-- Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
 
+# Release Status
+
+Not yet released
+
+# Licensing
+
+See the top-level LICENSE file
+
+# Getting Started
