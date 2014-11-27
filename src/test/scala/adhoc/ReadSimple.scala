@@ -9,10 +9,10 @@ object ReadSimple {
 
     val mongoClient = MongoClient("localhost", 27030)
 
-    val ig = new IntervalGenerator(mongoClient, "test", "simple")
+    val ig = new IntervalGenerator(mongoClient, "test", "simple2")
     var tot = 0
-    ig.generate().foreach(interval => {
-      val iter = MongoConnector.getCollection("shardedtest", "one", interval)
+    ig.generateSyntheticIntervals(4).foreach(interval => {
+      val iter = MongoConnector.getCollection("test", "simple", interval)
       var c = 0
       while (iter.hasNext) {
         iter.next()
