@@ -129,6 +129,7 @@
     <orderEntry type="library" name="SBT: org.xerial.snappy:snappy-java:1.0.5.3" level="project" />
     <orderEntry type="library" name="SBT: oro:oro:2.0.8" level="project" />
     <orderEntry type="library" name="SBT: xmlenc:xmlenc:0.52" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.10:2.0" level="project" />
   </component>
 </module>
 

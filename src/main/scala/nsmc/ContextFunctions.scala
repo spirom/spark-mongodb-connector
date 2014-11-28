@@ -1,6 +1,6 @@
 package nsmc
 
-import nsmc.mongo.MongoConnector
+import nsmc.mongo.{MongoConnectorConf, CollectionConfig, MongoConnector}
 
 import nsmc.rdd.MongoRDD
 import org.apache.spark.SparkContext
@@ -9,8 +9,10 @@ import scala.reflect.ClassTag
 
 class ContextFunctions(@transient val sc: SparkContext) extends Serializable {
 
-  def mongoCollection[T](databaseName: String, collectionName: String)
+  def mongoCollection[T](databaseName: String, collectionName: String, indexedKays:Seq[String] = Seq())
                        (implicit connector: MongoConnector = MongoConnector(sc.getConf),
-                        ct: ClassTag[T]) =
-    new MongoRDD[T](sc, connector, databaseName, collectionName)
+                        ct: ClassTag[T]) = {
+    val collectionConfig = new CollectionConfig(MongoConnectorConf(sc.getConf), databaseName, collectionName, indexedKays)
+    new MongoRDD[T](sc, connector, collectionConfig)
+  }
 }

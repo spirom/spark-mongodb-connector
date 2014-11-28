@@ -10,7 +10,9 @@ import scala.collection.mutable
 
 import scala.collection.JavaConversions._
 
-class IntervalGenerator(client: MongoClient, dbName: String, collectionName: String) {
+class IntervalGenerator(dest: Destination, dbName: String, collectionName: String) {
+
+  val client = MongoClient(dest.host, dest.port)
 
   private val MIN_KEY_TYPE = new MinKey()
   private val MAX_KEY_TYPE = new MaxKey()
@@ -47,11 +49,8 @@ class IntervalGenerator(client: MongoClient, dbName: String, collectionName: Str
     intervals
   }
 
-  // TODO: only go directly to shards if allowed
-  // TODO: use Mongo to generate intervals if not sharded
-
   // get the intervals for a sharded collection
-  def generate() : Seq[MongoInterval] = {
+  def generate(direct: Boolean = false) : Seq[MongoInterval] = {
 
     val intervals = new mutable.ListBuffer[MongoInterval]()
 
@@ -71,7 +70,7 @@ class IntervalGenerator(client: MongoClient, dbName: String, collectionName: Str
       val shards = new mutable.HashMap[String, String]()
       val shardsCol = configDb("shards")
       shardsCol.foreach(dbo => shards.+=((dbo.get("_id").asInstanceOf[String], dbo.get("host").asInstanceOf[String])))
-      shards.foreach(kv => println(kv._1))
+      // TODO: log shards: shards.foreach(kv => println(kv._1))
 
       // get the chunks for this collection
       val chunksCol = configDb("chunks")
@@ -85,7 +84,7 @@ class IntervalGenerator(client: MongoClient, dbName: String, collectionName: Str
               val interval =
                 makeInterval(dbo.get("min").asInstanceOf[DBObject],
                   dbo.get("max").asInstanceOf[DBObject],
-                  Destination(hostPort))
+                  if (direct) Destination(hostPort) else dest)
               intervals.append(interval)
             }
           }

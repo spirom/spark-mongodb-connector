@@ -1,15 +1,13 @@
 package adhoc
 
 import com.mongodb.casbah.Imports._
-import nsmc.mongo.{IntervalGenerator, MongoConnector}
+import nsmc.mongo.{Destination, IntervalGenerator, MongoConnector}
 
 object ReadSimple {
 
   def  main (args: Array[String]) {
 
-    val mongoClient = MongoClient("localhost", 27030)
-
-    val ig = new IntervalGenerator(mongoClient, "test", "simple2")
+    val ig = new IntervalGenerator(Destination("localhost", 27030), "test", "simple2")
     var tot = 0
     ig.generateSyntheticIntervals(4).foreach(interval => {
       val iter = MongoConnector.getCollection("test", "simple", interval)

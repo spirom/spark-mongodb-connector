@@ -7,7 +7,6 @@ class MongoConnector(conf: MongoConnectorConf) extends Serializable {
 
   def getCollection(databaseName: String, collectionName: String): Iterator[MongoDBObject] = {
     val mongoClient = MongoClient(conf.host, conf.port)
-    // TODO: deal with credentials
     val db = mongoClient.getDB(databaseName)
     val col = db(collectionName)
     col.iterator.map(e => e)
@@ -22,10 +21,9 @@ object MongoConnector {
     new MongoConnector(MongoConnectorConf(conf))
   }
 
-  // fetch data fromt he given interval
+  // fetch data from the given interval
   def getCollection(databaseName: String, collectionName: String, interval: MongoInterval): Iterator[DBObject] = {
     val mongoClient = MongoClient(interval.destination.host, interval.destination.port)
-    // TODO: deal with credentials
     val db = mongoClient.getDB(databaseName)
     val col = db(collectionName)
 

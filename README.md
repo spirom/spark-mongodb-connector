@@ -16,6 +16,10 @@ directly from Apache Spark. In Spark, the data from MongoDB is represented as an
 -- Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
 
+# Other Warnings
+
+- The APIs will probably change several times before an official release
+
 # Release Status
 
 Not yet released
