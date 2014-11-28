@@ -10,10 +10,10 @@ directly from Apache Spark. In Spark, the data from MongoDB is represented as an
 - No Java or Python API bindings
 - Can only read (no updates)
 - Only tested with the following configurations:
--- MongoDB: 2.6
--- Scala: 2.10
--- Spark: 1.1.0
--- Casbah 2.7
+ - MongoDB: 2.6
+ - Scala: 2.10
+ - Spark: 1.1.0
+ - Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
 
 # Other Warnings
