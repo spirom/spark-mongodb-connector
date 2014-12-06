@@ -2,8 +2,7 @@
 
 This is a native connector for reading and writing MongoDB collections
 directly from Apache Spark. In Spark, the data from MongoDB is represented as an
-
->    RDD[com.mongodb.casbah.commons.MongoDBObject]
+RDD[MongoDBObject].
 
 # Current Limitations
 

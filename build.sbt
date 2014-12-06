@@ -1,6 +1,12 @@
 name := "spark-mongodb-connector"
 
-version := "1.0"
+version := "0.1-SNAPSHOT"
+
+organization := "com.github.spirom"
+
+scalaVersion := "2.10.4"
+
+publishMavenStyle := true
 
 libraryDependencies += "org.apache.spark" % "spark-core_2.10" % "1.1.0"
 
