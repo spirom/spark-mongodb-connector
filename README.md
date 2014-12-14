@@ -21,10 +21,38 @@ RDD[MongoDBObject].
 
 # Release Status
 
-Not yet released
+Not yet released. A snapshot is available at Sonatype --s ee "Getting Started" below.
 
 # Licensing
 
 See the top-level LICENSE file
 
 # Getting Started
+
+Add the following to your build.sbt:
+
+    scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
+
+    resolvers += "SonatypeOSSSnapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
+    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
+
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.1-SNAPSHOT"
+
+In your code, you need to add:
+
+    import nsmc._
+
+    import com.mongodb.casbah.commons.MongoDBObject
+
+Then to actually read from a collection:
+
+    val conf = new SparkConf()
+        .setAppName("My MongoApp").setMaster("local[4]")
+        .set("nsmc.connection.host", "myMongoHost")
+        .set("nsmc.connection.port", "myMongoPort")
+    val sc = newSparkContext(conf)
+    val data: MongoRDD[MongoDBObject] =
+        sc.mongoCollection[MongoDBObject]("myDB", "myCollection")
+
+
