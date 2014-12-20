@@ -33,7 +33,8 @@ Add the following to your build.sbt:
 
     scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
 
-    resolvers += "SonatypeOSSSnapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+    resolvers +=
+        "SonatypeOSSSnapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
     libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
 
