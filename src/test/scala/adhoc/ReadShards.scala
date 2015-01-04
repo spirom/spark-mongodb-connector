@@ -1,13 +1,20 @@
 package adhoc
 
 import com.mongodb.casbah.Imports._
-import nsmc.mongo.{Destination, IntervalGenerator, MongoConnector}
+import nsmc.mongo.{MongoConnectorConf, Destination, IntervalGenerator, MongoConnector}
+import org.apache.spark.SparkConf
 
 object ReadShards {
 
   def  main (args: Array[String]) {
 
-    val ig = new IntervalGenerator(Destination("localhost", 27033), "shardedtest", "one")
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", "localhost")
+        .set("nsmc.connection.port", "27033")
+    val mcc = MongoConnectorConf(conf)
+    val ig = new IntervalGenerator(mcc.getDestination(), "shardedtest", "one")
     var tot = 0
     ig.generate().foreach(interval => {
       val iter = MongoConnector.getCollection("shardedtest", "one", interval)

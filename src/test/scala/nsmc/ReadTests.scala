@@ -1,7 +1,7 @@
 package nsmc
 
 import com.mongodb.casbah.Imports._
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkException, SparkContext, SparkConf}
 import org.scalatest._
 
 object TestConfig {
@@ -30,9 +30,9 @@ object TestConfig {
     val mongoClient = MongoClient(server, List(credentials))
 
     val db = mongoClient.getDB(authDB)
-    //if (db.collectionExists(authCollection)) {
-    //  db(authCollection).drop()
-    //}
+    if (db.collectionExists(authCollection)) {
+      db(authCollection).drop()
+    }
     val col = db(authCollection)
     for (i <- 1 to 1000)
     {
@@ -145,6 +145,79 @@ class ReadTests extends FlatSpec with Matchers {
     data.count() should be (400000)
     data.getPartitions.length should be (1)
     sc.stop()
+  }
+
+  "an authenticated user with read permissions" should "be able to read a db requiring auth" in {
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("nsmc.user", "reader")
+        .set("nsmc.password", "password")
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+
+    data.count() should be (1000)
+    data.getPartitions.length should be (1)
+    sc.stop()
+  }
+
+
+
+  "a non-existent user" should "not be able to read a db requiring auth" in {
+
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("nsmc.user", "nobody")
+        .set("nsmc.password", "password")
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+
+    a [SparkException] should be thrownBy {
+      data.count()
+    }
+    sc.stop()
+
+  }
+
+  "a un-authenticated user" should "not be able to read a db requiring auth" in {
+
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+
+    a [SparkException] should be thrownBy {
+      data.count()
+    }
+    sc.stop()
+
+  }
+
+  "a user without read permission on this database" should "not be able to read" in {
+
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("nsmc.user", "noroles")
+        .set("nsmc.password", "password")
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+
+    a [SparkException] should be thrownBy {
+      data.count()
+    }
+    sc.stop()
+
   }
 
 }

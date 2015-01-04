@@ -61,7 +61,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     if (!coll.getStats.getBoolean("sharded", false)) {
       // all in one partition
       val hostPort = client.getConnectPoint
-      val interval = makeInterval(null, null, Destination(hostPort))
+      val interval = makeInterval(null, null, Destination(hostPort, dest.conf))
     } else {
       // use chunks to create intervals
       val configDb = client.getDB("config")
@@ -84,7 +84,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
               val interval =
                 makeInterval(dbo.get("min").asInstanceOf[DBObject],
                   dbo.get("max").asInstanceOf[DBObject],
-                  if (direct) Destination(hostPort) else dest)
+                  if (direct) Destination(hostPort, dest.conf) else dest)
               intervals.append(interval)
             }
           }
@@ -108,7 +108,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     val maybeSplitKeys = result.getAs[MongoDBList]("splitKeys")
     val hostPort = client.getConnectPoint
 
-    val destination = Destination(hostPort)
+    val destination = Destination(hostPort, dest.conf)
 
     var previous:MongoDBObject = null
     val intervals = new mutable.ListBuffer[MongoInterval]()

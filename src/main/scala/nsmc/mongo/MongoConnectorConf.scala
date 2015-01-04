@@ -10,9 +10,11 @@ case class MongoConnectorConf(
   splitIndexed: Boolean,
   splitSize: Int,
   directToShards: Boolean,
-  useShardChunks: Boolean
+  useShardChunks: Boolean,
+  user: Option[String],
+  password: Option[String]
   ) {
-  def getDestination() : Destination = Destination(host, port)
+  def getDestination() : Destination = Destination(host, port, this)
 }
 
 object MongoConnectorConf {
@@ -21,6 +23,8 @@ object MongoConnectorConf {
 
   val ConnectionHostProperty = "nsmc.connection.host"
   val ConnectionPortProperty = "nsmc.connection.port"
+  val ConnectionUserProperty = "nsmc.user"
+  val ConnectionPasswordProperty = "nsmc.password"
   val PartitioningSplitIndexedProperty = "nsmc.split.indexed.collections"
   val PartitioningSplitSizeProperty = "nsmc.split.chunk.size"
   val PartitioningDirectToShardsProperty = "nsmc.direct.to.shards"
@@ -34,7 +38,9 @@ object MongoConnectorConf {
     val splitSize = conf.getInt(PartitioningSplitSizeProperty, DefaultSplitSize)
     val directToShards = conf.getBoolean(PartitioningDirectToShardsProperty, false)
     val useShardChunks = conf.getBoolean(PartitioningUseShardChunksProperty, false)
-    MongoConnectorConf(host, port, splitIndexed, splitSize, directToShards, useShardChunks)
+    val user = conf.getOption(ConnectionUserProperty)
+    val password = conf.getOption(ConnectionPasswordProperty)
+    MongoConnectorConf(host, port, splitIndexed, splitSize, directToShards, useShardChunks, user, password)
   }
 }
 
