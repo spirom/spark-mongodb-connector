@@ -20,5 +20,7 @@ class MongoToSchemaRDDTests extends FlatSpec with Matchers {
     val mo = MongoDBObject("key" -> "hello") ++ ("" -> 99)
 
     //val (t, o) = toSchema(mo)
+
+    sc.stop()
   }
 }

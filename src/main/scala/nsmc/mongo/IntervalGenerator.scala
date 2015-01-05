@@ -3,7 +3,7 @@ package nsmc.mongo
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 
-import com.mongodb.{DBObject, BasicDBObject}
+import com.mongodb.{ServerAddress, DBObject, BasicDBObject}
 import org.bson.types.{MaxKey, MinKey}
 
 import scala.collection.mutable
@@ -12,7 +12,14 @@ import scala.collection.JavaConversions._
 
 class IntervalGenerator(dest: Destination, dbName: String, collectionName: String) {
 
-  val client = MongoClient(dest.host, dest.port)
+  val conf = dest.conf
+  val server = new ServerAddress(dest.host, dest.port)
+  val client = if (conf.user.isDefined && conf.password.isDefined) {
+    val credentials = MongoCredential.createMongoCRCredential(conf.user.get, dbName, conf.password.get.toCharArray)
+    MongoClient(server, List(credentials))
+  } else {
+    MongoClient(server)
+  }
 
   private val MIN_KEY_TYPE = new MinKey()
   private val MAX_KEY_TYPE = new MaxKey()
@@ -94,9 +101,19 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     intervals
   }
 
+  // Convert a sequence of names of key columns to create a MongoDBObject containing
+  // a "keyPattern"
+  private def makeKeyPattern(indexedKeys: Seq[String]) : MongoDBObject = {
+    val numberedKeys = indexedKeys.zipWithIndex
+    val builder = MongoDBObject.newBuilder
+    // caution: indexes are zero-based but Mongo needs 1-based key sequence
+    numberedKeys.foreach({ case (k:String, i: Int) => builder += (k -> (i + 1)) })
+    builder.result
+  }
+
   // get intervals for an un-sharded collection as suggested by MongoDB
-  def generateSyntheticIntervals(maxChunkSize: Int) : Seq[MongoInterval] = {
-    val keyPattern = MongoDBObject("key" -> 1)
+  def generateSyntheticIntervals(maxChunkSize: Int, indexedKeys: Seq[String]) : Seq[MongoInterval] = {
+    val keyPattern = makeKeyPattern(indexedKeys)
     val splitCommand =
       MongoDBObject("splitVector" -> (dbName + "." + collectionName)) ++
         ("keyPattern" -> keyPattern) ++ ("maxChunkSize" -> maxChunkSize)

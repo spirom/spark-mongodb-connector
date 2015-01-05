@@ -16,7 +16,7 @@ object ReadSimple {
     val mcc = MongoConnectorConf(conf)
     val ig = new IntervalGenerator(mcc.getDestination(), "test", "simple2")
     var tot = 0
-    ig.generateSyntheticIntervals(4).foreach(interval => {
+    ig.generateSyntheticIntervals(4, List("key")).foreach(interval => {
       val iter = MongoConnector.getCollection("test", "simple", interval)
       var c = 0
       while (iter.hasNext) {
