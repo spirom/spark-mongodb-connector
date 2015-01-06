@@ -9,13 +9,13 @@ class MongoRDDPartitioner(val collectionConfig: CollectionConfig) extends nsmc.L
 
   def partitions(): Array[Partition] = {
     val intervals = if (collectionConfig.connectorConf.splitIndexed && collectionConfig.indexedKeys.length > 0) {
-      logInfo(s"Partitioning collection ${collectionConfig.collectionName} in database ${collectionConfig.databaseName} with synthetic partitions")
+      logInfo(s"Partitioning collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}' with synthetic partitions")
       ig.generateSyntheticIntervals(collectionConfig.connectorConf.splitSize, collectionConfig.indexedKeys)
     } else if (collectionConfig.connectorConf.useShardChunks) {
-      logInfo(s"Partitioning collection ${collectionConfig.collectionName} in database ${collectionConfig.databaseName} with shard chunks")
+      logInfo(s"Partitioning collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}' with shard chunks")
       ig.generate(collectionConfig.connectorConf.directToShards)
     } else {
-      logInfo(s"NOT Partitioning collection ${collectionConfig.collectionName} in database ${collectionConfig.databaseName} -- producing single partition")
+      logInfo(s"NOT Partitioning collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}' -- producing single partition")
       val interval = new MongoInterval(null, null, collectionConfig.connectorConf.getDestination())
       Seq(interval)
     }

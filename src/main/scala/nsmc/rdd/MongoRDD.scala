@@ -27,6 +27,8 @@ import scala.reflect.ClassTag
 
     override def getPartitions: Array[Partition] = {
       val partitions = new MongoRDDPartitioner(collectionConfig).partitions()
+      // TODO: is this using the wrong logger?
+      logInfo(s"Obtained ${partitions.size} partitions for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
       partitions
     }
 
@@ -41,6 +43,3 @@ import scala.reflect.ClassTag
 
   }
 
-  object MongoRDD {
-
-  }

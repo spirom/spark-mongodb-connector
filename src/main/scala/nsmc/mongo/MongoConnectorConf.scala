@@ -17,7 +17,7 @@ case class MongoConnectorConf(
   def getDestination() : Destination = Destination(host, port, this)
 }
 
-object MongoConnectorConf {
+object MongoConnectorConf extends nsmc.Logging {
   val DefaultPort = 27017
   val DefaultSplitSize = 4
 
@@ -40,6 +40,16 @@ object MongoConnectorConf {
     val useShardChunks = conf.getBoolean(PartitioningUseShardChunksProperty, false)
     val user = conf.getOption(ConnectionUserProperty)
     val password = conf.getOption(ConnectionPasswordProperty)
+
+    val userString = user.getOrElse("<absent>")
+    val passwordString = if (password.isDefined) "<present>" else "<absent>"
+    logDebug(s"host='$host' port='$port' user='$userString' password='$passwordString'")
+
+    logDebug(s"$PartitioningSplitIndexedProperty=$splitIndexed")
+    logDebug(s"$PartitioningSplitSizeProperty=${splitSize}")
+    logDebug(s"$PartitioningDirectToShardsProperty=$directToShards")
+    logDebug(s"$PartitioningUseShardChunksProperty=$useShardChunks")
+
     MongoConnectorConf(host, port, splitIndexed, splitSize, directToShards, useShardChunks, user, password)
   }
 }
