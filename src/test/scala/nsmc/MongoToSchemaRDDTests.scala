@@ -1,26 +1,36 @@
 package nsmc
 
 import com.mongodb.casbah.Imports._
-import org.apache.spark.sql._
-import org.apache.spark.{SparkContext, SparkConf}
+import nsmc.mongo.Conversions
+import org.apache.spark.sql.catalyst.types._
+import org.apache.spark.sql.StructField
 import org.scalatest._
 
 class MongoToSchemaRDDTests extends FlatSpec with Matchers {
 
-  "an unknown collection" should "fail gracefully" in {
-    val conf =
-      new SparkConf()
-        .setAppName("Converter").setMaster("local[4]")
-    val sc = new SparkContext(conf)
-    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
-    import sqlContext.createSchemaRDD
+  "a flat object" should "have a flat type" in {
 
-    case class CC(i: Int)
+    val mo = MongoDBObject("key" -> "hello") ++ ("val" -> 99)
 
-    val mo = MongoDBObject("key" -> "hello") ++ ("" -> 99)
+    val t = Conversions.toSchema(mo)
 
-    //val (t, o) = toSchema(mo)
+    t.size should be (2)
+    t(0) should be (new StructField("key", StringType, false))
+    t(1) should be (new StructField("val", IntegerType, false))
 
-    sc.stop()
+  }
+
+  "a nested object" should "have a nested type" in {
+
+    val mo = MongoDBObject("key" -> "hello") ++ ("val" -> (MongoDBObject("a" -> 11) ++ ("b" -> 22)))
+
+    val t = Conversions.toSchema(mo)
+
+    t.size should be (2)
+    t(0) should be (new StructField("key", StringType, false))
+    //t(1) should be (new StructField("val", StructType(st), false))
+
+
+
   }
 }
