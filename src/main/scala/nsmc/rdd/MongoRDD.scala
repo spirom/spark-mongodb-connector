@@ -38,6 +38,7 @@ import scala.reflect.ClassTag
 
     override def compute(split: Partition, context: TaskContext): Iterator[R] = {
       val mp = split.asInstanceOf[MongoRDDPartition]
+      logDebug(s"Computing partition ${mp.index} for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
       MongoConnector.getCollection(collectionConfig.databaseName, collectionConfig.collectionName, mp.interval).asInstanceOf[Iterator[R]]
     }
 

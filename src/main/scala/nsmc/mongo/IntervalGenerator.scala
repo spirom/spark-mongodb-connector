@@ -10,14 +10,16 @@ import scala.collection.mutable
 
 import scala.collection.JavaConversions._
 
-class IntervalGenerator(dest: Destination, dbName: String, collectionName: String) {
+class IntervalGenerator(dest: Destination, dbName: String, collectionName: String) extends nsmc.Logging {
 
   val conf = dest.conf
   val server = new ServerAddress(dest.host, dest.port)
   val client = if (conf.user.isDefined && conf.password.isDefined) {
     val credentials = MongoCredential.createMongoCRCredential(conf.user.get, dbName, conf.password.get.toCharArray)
+    logDebug(s"Connecting with password for user '${conf.user.get}'")
     MongoClient(server, List(credentials))
   } else {
+    logDebug(s"Connecting without credentials")
     MongoClient(server)
   }
 
@@ -50,14 +52,9 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     new MongoInterval(splitMin, splitMax, destination)
   }
 
-  def generateFromDB() : Seq[MongoInterval] = {
-    val intervals = new mutable.ListBuffer[MongoInterval]()
-
-    intervals
-  }
-
   // get the intervals for a sharded collection
   def generate(direct: Boolean = false) : Seq[MongoInterval] = {
+    logDebug(s"Generating intervals for sharded collection '${collectionName}' in database '${dbName}'")
 
     val intervals = new mutable.ListBuffer[MongoInterval]()
 
@@ -73,12 +70,16 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
       // use chunks to create intervals
       val configDb = client.getDB("config")
 
-      // create a shard to table in order to know where to connect for chunk data
+      // create a map from shards to hosts to know where to connect for chunk data
       val shards = new mutable.HashMap[String, String]()
       val shardsCol = configDb("shards")
       shardsCol.foreach(dbo => shards.+=((dbo.get("_id").asInstanceOf[String], dbo.get("host").asInstanceOf[String])))
       // TODO: log shards: shards.foreach(kv => println(kv._1))
 
+      logDebug(s"Shards for '${dbName}/${collectionName}' count='${shards.size}'")
+      shards.foreach(kv => {
+        logDebug(s"Shard id='${kv._1}' host:port='${kv._2}'")
+      })
       // get the chunks for this collection
       val chunksCol = configDb("chunks")
       chunksCol.foreach(dbo => {
@@ -113,6 +114,8 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
 
   // get intervals for an un-sharded collection as suggested by MongoDB
   def generateSyntheticIntervals(maxChunkSize: Int, indexedKeys: Seq[String]) : Seq[MongoInterval] = {
+    logDebug(s"Generating synthetic intervals for collection '${collectionName}' in database '${dbName}' with maxChunkSize='${maxChunkSize}'")
+    logDebug(s"IndexedKeys: ${indexedKeys.map(k => "[" + k + "]").mkString(", ")}")
     val keyPattern = makeKeyPattern(indexedKeys)
     val splitCommand =
       MongoDBObject("splitVector" -> (dbName + "." + collectionName)) ++
