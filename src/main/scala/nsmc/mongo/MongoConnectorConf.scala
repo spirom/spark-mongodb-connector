@@ -4,6 +4,7 @@ import java.net.InetAddress
 
 import org.apache.spark.SparkConf
 
+private[nsmc]
 case class MongoConnectorConf(
   host: String,
   port: Int = MongoConnectorConf.DefaultPort,
@@ -17,6 +18,7 @@ case class MongoConnectorConf(
   def getDestination() : Destination = Destination(host, port, this)
 }
 
+private[nsmc]
 object MongoConnectorConf extends nsmc.Logging {
   val DefaultPort = 27017
   val DefaultSplitSize = 4

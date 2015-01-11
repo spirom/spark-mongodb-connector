@@ -1,4 +1,4 @@
-package adhoc
+package nsmc.adhoc
 
 import util.EmbeddedMongo
 

@@ -14,6 +14,7 @@ RDD[MongoDBObject].
  - Spark: 1.1.0
  - Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
+- Known to leak resources quite badly
 
 # Other Warnings
 
@@ -52,6 +53,8 @@ Then to actually read from a collection:
         .setAppName("My MongoApp").setMaster("local[4]")
         .set("nsmc.connection.host", "myMongoHost")
         .set("nsmc.connection.port", "myMongoPort")
+        .set("nsmc.user", "yourUsernameHere")
+        .set("nsmc.password", "yourPasswordHere")
     val sc = newSparkContext(conf)
     val data: MongoRDD[MongoDBObject] =
         sc.mongoCollection[MongoDBObject]("myDB", "myCollection")

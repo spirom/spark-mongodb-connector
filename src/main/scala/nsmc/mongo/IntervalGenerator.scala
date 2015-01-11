@@ -10,6 +10,7 @@ import scala.collection.mutable
 
 import scala.collection.JavaConversions._
 
+private[nsmc]
 class IntervalGenerator(dest: Destination, dbName: String, collectionName: String) extends nsmc.Logging {
 
   val conf = dest.conf
@@ -23,6 +24,10 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     MongoClient(server)
   }
 
+  def close() : Unit = {
+    client.close()
+  }
+
   private val MIN_KEY_TYPE = new MinKey()
   private val MAX_KEY_TYPE = new MaxKey()
 
@@ -30,22 +35,22 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     val splitMin:DBObject  = new BasicDBObject()
     if (lowerBound != null) {
       lowerBound.entrySet().iterator().foreach(entry => {
-        val key = entry.getKey()
-        val value = entry.getValue()
+        val key = entry.getKey
+        val value = entry.getValue
         if (!value.equals(MIN_KEY_TYPE))
         {
-          splitMin.put(key, value);
+          splitMin.put(key, value)
         }
       })
     }
     val splitMax:DBObject  = new BasicDBObject()
     if (upperBound != null) {
       upperBound.entrySet().iterator().foreach(entry => {
-        val key = entry.getKey();
-        val value = entry.getValue();
+        val key = entry.getKey
+        val value = entry.getValue
 
         if (!value.equals(MAX_KEY_TYPE)) {
-          splitMax.put(key, value);
+          splitMax.put(key, value)
         }
       })
     }
@@ -54,15 +59,18 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
 
   // get the intervals for a sharded collection
   def generate(direct: Boolean = false) : Seq[MongoInterval] = {
-    logDebug(s"Generating intervals for sharded collection '${collectionName}' in database '${dbName}'")
+    logDebug(s"Generating intervals for sharded collection '$collectionName' in database '$dbName'")
 
     val intervals = new mutable.ListBuffer[MongoInterval]()
 
     val coll = client.getDB(dbName)(collectionName)
-    if (!coll.getStats.getBoolean("ok", false)) {
-      // TODO: throw something
+
+    val statsOk = coll.getStats.getBoolean("ok", false)
+
+    if (!statsOk) {
+      logWarning(s"Can't get stats for collection '$collectionName' in database '$dbName': assuming unsharded")
     }
-    if (!coll.getStats.getBoolean("sharded", false)) {
+    if (!statsOk || !coll.getStats.getBoolean("sharded", false)) {
       // all in one partition
       val hostPort = client.getConnectPoint
       val interval = makeInterval(null, null, Destination(hostPort, dest.conf))
@@ -74,9 +82,8 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
       val shards = new mutable.HashMap[String, String]()
       val shardsCol = configDb("shards")
       shardsCol.foreach(dbo => shards.+=((dbo.get("_id").asInstanceOf[String], dbo.get("host").asInstanceOf[String])))
-      // TODO: log shards: shards.foreach(kv => println(kv._1))
 
-      logDebug(s"Shards for '${dbName}/${collectionName}' count='${shards.size}'")
+      logDebug(s"Shards for '$dbName/$collectionName' count='${shards.size}'")
       shards.foreach(kv => {
         logDebug(s"Shard id='${kv._1}' host:port='${kv._2}'")
       })
@@ -109,12 +116,12 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     val builder = MongoDBObject.newBuilder
     // caution: indexes are zero-based but Mongo needs 1-based key sequence
     numberedKeys.foreach({ case (k:String, i: Int) => builder += (k -> (i + 1)) })
-    builder.result
+    builder.result()
   }
 
   // get intervals for an un-sharded collection as suggested by MongoDB
   def generateSyntheticIntervals(maxChunkSize: Int, indexedKeys: Seq[String]) : Seq[MongoInterval] = {
-    logDebug(s"Generating synthetic intervals for collection '${collectionName}' in database '${dbName}' with maxChunkSize='${maxChunkSize}'")
+    logDebug(s"Generating synthetic intervals for collection '$collectionName' in database '$dbName' with maxChunkSize='$maxChunkSize'")
     logDebug(s"IndexedKeys: ${indexedKeys.map(k => "[" + k + "]").mkString(", ")}")
     val keyPattern = makeKeyPattern(indexedKeys)
     val splitCommand =
@@ -123,7 +130,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     val result = client.getDB(dbName).command(splitCommand)
     val status = result.ok()
     if (!status) {
-      throw new MetadataException(result.getErrorMessage())
+      throw new MetadataException(result.getErrorMessage)
     }
     val maybeSplitKeys = result.getAs[MongoDBList]("splitKeys")
     val hostPort = client.getConnectPoint
@@ -133,7 +140,9 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     var previous:MongoDBObject = null
     val intervals = new mutable.ListBuffer[MongoInterval]()
     maybeSplitKeys match {
-      case None => // log and throw something
+      case None => {
+        logWarning(s"Failed to generate intervals for collection '$collectionName' in database '$dbName'")
+      }
       case Some(splitKeys) =>
         splitKeys.foreach(o => {
           val kv = o.asInstanceOf[BasicDBObject]
@@ -143,7 +152,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
         })
       intervals += makeInterval(previous, null, destination)
     }
-
+    logDebug(s"Generated ${intervals.size} intervals for collection '$collectionName' in database '$dbName'")
     intervals
   }
 }

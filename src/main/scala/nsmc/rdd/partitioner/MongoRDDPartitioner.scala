@@ -3,11 +3,12 @@ package nsmc.rdd.partitioner
 import nsmc.mongo.{MongoInterval, IntervalGenerator, CollectionConfig}
 import org.apache.spark.Partition
 
+private[nsmc]
 class MongoRDDPartitioner(val collectionConfig: CollectionConfig) extends nsmc.Logging {
   val ig = new IntervalGenerator(collectionConfig.connectorConf.getDestination(),
     collectionConfig.databaseName, collectionConfig.collectionName)
 
-  def partitions(): Array[Partition] = {
+  def makePartitions(): Array[Partition] = {
     val intervals = if (collectionConfig.connectorConf.splitIndexed && collectionConfig.indexedKeys.length > 0) {
       logInfo(s"Partitioning collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}' with synthetic partitions")
       ig.generateSyntheticIntervals(collectionConfig.connectorConf.splitSize, collectionConfig.indexedKeys)
@@ -26,5 +27,9 @@ class MongoRDDPartitioner(val collectionConfig: CollectionConfig) extends nsmc.L
       }
     }
     partitions.to[Array]
+  }
+
+  def close() : Unit = {
+    ig.close();
   }
 }

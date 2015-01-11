@@ -1,4 +1,4 @@
-package adhoc
+package nsmc.adhoc
 
 import com.mongodb.casbah.Imports._
 import org.apache.spark.{SparkConf, SparkContext}

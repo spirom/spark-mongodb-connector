@@ -1,9 +1,11 @@
 package nsmc.mongo
 
+private[nsmc]
 case class Destination(host: String, port: Int,conf: MongoConnectorConf) {
 
 }
 
+private[nsmc]
 object Destination {
   def apply(hostPort: String, conf: MongoConnectorConf) : Destination = {
     val parts = hostPort.split(":")
