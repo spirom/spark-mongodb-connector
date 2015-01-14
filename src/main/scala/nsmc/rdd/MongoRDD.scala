@@ -24,14 +24,17 @@ class MongoRDD[R] private[nsmc] (@transient sc: SparkContext,
     partitions
   }
 
-  override def getPreferredLocations(split: Partition) =
-    Seq()
-
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
     val mp = split.asInstanceOf[MongoRDDPartition]
     logDebug(s"Computing partition ${mp.index} for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
     val mongoConnector = new MongoConnector(collectionConfig.databaseName, collectionConfig.collectionName, mp.interval)
-    mongoConnector.getData.asInstanceOf[Iterator[R]]
+    val iter = mongoConnector.getData.asInstanceOf[Iterator[R]]
+    // TODO: collect statistics here
+    context.addTaskCompletionListener { (context) =>
+      mongoConnector.close()
+      logDebug(s"Computed partition ${mp.index} for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
+    }
+    iter
   }
 
 }
