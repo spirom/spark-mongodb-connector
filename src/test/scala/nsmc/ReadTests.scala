@@ -15,12 +15,32 @@ class ReadTests extends FlatSpec with Matchers {
   }
 
   "an unknown database" should "fail gracefully" in {
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodHost)
+        .set("nsmc.connection.port", TestConfig.mongodPort)
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
+    data.count() should be (300000)
+    data.getPartitions.length should be (1)
+    sc.stop()
   }
 
 
   "an unknown collection" should "fail gracefully" in {
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodHost)
+        .set("nsmc.connection.port", TestConfig.mongodPort)
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection(TestConfig.basicDB, "UnknownColl")
 
+    data.count() should be (300000)
+    data.getPartitions.length should be (1)
+    sc.stop()
   }
 
   "an unindexed collection" should "get a single partition" in {
@@ -30,7 +50,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.connection.host", TestConfig.mongodHost)
         .set("nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.basicDB,TestConfig.basicCollection)
+    val data = sc.mongoCollection(TestConfig.basicDB,TestConfig.basicCollection)
 
     data.count() should be (300000)
     data.getPartitions.length should be (1)
@@ -46,7 +66,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.split.indexed.collections", "true")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq("key")
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.basicDB,
+    val data = sc.mongoCollection(TestConfig.basicDB,
       TestConfig.indexedCollection, indexedKeys)
 
     data.count() should be (300000)
@@ -64,7 +84,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.direct.to.shards", "true")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq("key")
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.shardedDB,
+    val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 
     data.count() should be (400000)
@@ -82,7 +102,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq("key")
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.shardedDB,
+    val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 
     data.count() should be (400000)
@@ -100,7 +120,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq("key")
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.shardedDB,
+    val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 
     data.count() should be (400000)
@@ -117,7 +137,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.user", "reader")
         .set("nsmc.password", "password")
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+    val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
     data.count() should be (1000)
     data.getPartitions.length should be (1)
@@ -136,7 +156,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.user", "nobody")
         .set("nsmc.password", "password")
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+    val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
     a [SparkException] should be thrownBy {
       data.count()
@@ -153,7 +173,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.connection.host", TestConfig.mongodAuthHost)
         .set("nsmc.connection.port", TestConfig.mongodAuthPort)
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+    val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
     a [SparkException] should be thrownBy {
       data.count()
@@ -172,7 +192,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.user", "noroles")
         .set("nsmc.password", "password")
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection[MongoDBObject](TestConfig.authDB,TestConfig.authCollection)
+    val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
     a [SparkException] should be thrownBy {
       data.count()
