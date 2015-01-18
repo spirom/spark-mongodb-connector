@@ -39,7 +39,7 @@ Add the following to your build.sbt:
 
     libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
 
-    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.1-SNAPSHOT"
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.3.0"
 
 In your code, you need to add:
 
