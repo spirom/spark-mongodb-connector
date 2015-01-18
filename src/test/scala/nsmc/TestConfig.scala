@@ -4,6 +4,10 @@ import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports._
 
 object TestConfig {
+
+  val unknownHost = "unknown"
+  val unknownPort = "27040"
+
   val mongosHost = "localhost"
   val mongosPort = "27033"
 

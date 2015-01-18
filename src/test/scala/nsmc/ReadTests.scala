@@ -11,10 +11,36 @@ class ReadTests extends FlatSpec with Matchers {
 
 
   "an unreachable server" should "fail gracefully" in {
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.unknownHost)
+        .set("nsmc.connection.port", TestConfig.mongodPort)
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
+    a [SparkException] should be thrownBy {
+      data.count() should be(0)
+    }
+    sc.stop()
   }
 
-  "an unknown database" should "fail gracefully" in {
+  "an unused server port" should "fail gracefully" in {
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodHost)
+        .set("nsmc.connection.port", TestConfig.unknownPort)
+    val sc = new SparkContext(conf)
+    val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
+
+    a [SparkException] should be thrownBy {
+      data.count() should be(0)
+    }
+    sc.stop()
+  }
+
+  "any collection in an unknown database" should "seem to be empty" in {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
@@ -23,13 +49,13 @@ class ReadTests extends FlatSpec with Matchers {
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
-    data.count() should be (300000)
+    data.count() should be (0)
     data.getPartitions.length should be (1)
     sc.stop()
   }
 
 
-  "an unknown collection" should "fail gracefully" in {
+  "an unknown collection" should "fail seem to be empty" in {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
@@ -38,7 +64,7 @@ class ReadTests extends FlatSpec with Matchers {
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.basicDB, "UnknownColl")
 
-    data.count() should be (300000)
+    data.count() should be (0)
     data.getPartitions.length should be (1)
     sc.stop()
   }
