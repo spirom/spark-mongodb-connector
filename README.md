@@ -38,9 +38,9 @@ Add the following to your build.sbt for the latest _stable_ release:
 
     libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.3.0"
 
-To sue the latest snapshot release:
+To use the latest snapshot release:
 
-scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
+    scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
 
     resolvers +=
         "SonatypeOSSSnapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
