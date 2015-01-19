@@ -30,16 +30,24 @@ See the top-level LICENSE file
 
 # Getting Started
 
-Add the following to your build.sbt:
+Add the following to your build.sbt for the latest _stable_ release:
 
     scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
+
+    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
+
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.3.0"
+
+To sue the latest snapshot release:
+
+scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
 
     resolvers +=
         "SonatypeOSSSnapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
     libraryDependencies += "org.apache.spark" %% "spark-core" % "1.1.0"
 
-    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.3.0"
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.2-SNAPSHOT"
 
 In your code, you need to add:
 
