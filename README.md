@@ -1,8 +1,10 @@
-# A Native MongoDB Connector for Apache Spark
+# NSMC: A Native MongoDB Connector for Apache Spark
 
 This is a native connector for reading and writing MongoDB collections
 directly from Apache Spark. In Spark, the data from MongoDB is represented as an
 RDD[MongoDBObject].
+
+Fore more details about this project, check this [blog post](http://www.river-of-bytes.com/2015/01/nsmc-native-mongodb-connector-for.html).
 
 # Current Limitations
 
