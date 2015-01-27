@@ -24,7 +24,7 @@ Fore more details about this project, check this [blog post](http://www.river-of
 
 # Release Status
 
-Not yet released. A snapshot is available at Sonatype --s ee "Getting Started" below.
+A pre-release alpha version (0.3.0) is available.
 
 # Licensing
 
