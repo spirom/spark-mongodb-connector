@@ -10,7 +10,7 @@ class InternalAndSchema {
 
 object InternalAndSchema {
   def toSchema(st: StructureType) : Seq[StructField] = {
-    st.fields.map(kv => toSchema(kv)).toSeq
+    st.fields.map(kv => toSchema(kv)).toSeq.sortBy(sf => sf.name)
   }
 
   def toSchema(kv: (String, ConversionType)) : StructField = {

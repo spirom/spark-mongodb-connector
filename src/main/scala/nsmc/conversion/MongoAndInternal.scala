@@ -16,13 +16,19 @@ object MongoAndInternal {
     new StructureType(hm)
   }
 
+  def toInternal(o: BasicDBObject) : StructureType = {
+    val hm = new mutable.HashMap[String, ConversionType]()
+    o.map(kv => hm += toInternal(kv))
+    new StructureType(hm)
+  }
+
   def toInternal(kv: Pair[String, AnyRef]) : (String, ConversionType) = {
     kv match {
       case (k: String, a: AnyRef) => {
         val vt = a match {
           case s:String => AtomicType(StringType)
           case i:Integer => AtomicType(IntegerType)
-          case o:BasicDBObject => toInternal(o.asInstanceOf[MongoDBObject])
+          case o:BasicDBObject => toInternal(o)
         }
         (k, vt)
       }

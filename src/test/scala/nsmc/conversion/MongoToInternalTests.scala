@@ -39,7 +39,5 @@ class MongoToInternalTests extends FlatSpec with Matchers {
 
   // TODO: arrays
 
-  // TODO: compatible types
 
-  // TODO: incompatible types
 }

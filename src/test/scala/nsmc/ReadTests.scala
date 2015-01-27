@@ -90,6 +90,7 @@ class ReadTests extends FlatSpec with Matchers {
         .set("nsmc.connection.host", TestConfig.mongodHost)
         .set("nsmc.connection.port", TestConfig.mongodPort)
         .set("nsmc.split.indexed.collections", "true")
+        .set("nsmc.split.chunk.size", "4")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq("key")
     val data = sc.mongoCollection(TestConfig.basicDB,
