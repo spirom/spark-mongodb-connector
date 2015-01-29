@@ -1,4 +1,4 @@
-package nsmc.conversion
+package nsmc.conversion.types
 
 import com.mongodb.casbah.Imports._
 import org.apache.spark.sql.catalyst.types.{IntegerType, StringType}
@@ -12,13 +12,13 @@ class MongoAndInternal {
 object MongoAndInternal {
   def toInternal(o: MongoDBObject) : StructureType = {
     val hm = new mutable.HashMap[String, ConversionType]()
-    o.map(kv => hm += toInternal(kv))
+    o.foreach(kv => hm += toInternal(kv))
     new StructureType(hm)
   }
 
   def toInternal(o: BasicDBObject) : StructureType = {
     val hm = new mutable.HashMap[String, ConversionType]()
-    o.map(kv => hm += toInternal(kv))
+    o.foreach(kv => hm += toInternal(kv))
     new StructureType(hm)
   }
 

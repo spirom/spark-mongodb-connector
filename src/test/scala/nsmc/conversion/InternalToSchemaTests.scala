@@ -1,6 +1,7 @@
 package nsmc.conversion
 
 import com.mongodb.casbah.Imports._
+import nsmc.conversion.types.{InternalAndSchema, StructureType, AtomicType, ConversionType}
 import org.apache.spark.sql.catalyst.types.{IntegerType, StringType, StructField, StructType}
 import org.scalatest._
 
