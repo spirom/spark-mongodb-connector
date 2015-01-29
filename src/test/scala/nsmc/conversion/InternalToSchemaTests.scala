@@ -41,7 +41,7 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
     val struct = t(1)
     struct shouldBe a [StructField]
     struct match {
-      case StructField(k, dt, _) => {
+      case StructField(k, dt, _, _) => {
         k should be ("val")
         dt shouldBe a [StructType]
         val innerFields = dt.asInstanceOf[StructType].fields
