@@ -11,7 +11,7 @@ class SchemaAccumulator {
   // TODO: make this not be a var by changing the way Merger works
   private var currentInternal = new StructureType(new mutable.HashMap[String, ConversionType]())
 
-  def considerRecord(rec: MongoDBObject) : Unit = {
+  def considerRecord(rec: DBObject) : Unit = {
     val recInternalType = MongoAndInternal.toInternal(rec)
     currentInternal = Merger.merge(recInternalType, currentInternal).asInstanceOf[StructureType]
   }

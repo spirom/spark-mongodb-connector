@@ -9,7 +9,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
 
   "a flat record with no gaps in the right order" should "convert correctly" in {
     val mo = MongoDBObject("key" -> "hello") ++ ("val" -> 99)
-    val t = MongoAndInternal.toInternal(mo)
+    val t = MongoAndInternal.toInternal(mo).getImmutable
     val rc = new RecordConverter(t)
     val r = rc.getSchemaRecord(mo)
 
@@ -22,7 +22,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
     val mo = MongoDBObject("key" -> "hello") ++ ("val" -> 99)
     val replacement = MongoDBObject("val" -> 99) ++ ("key" -> "hello")
 
-    val t = MongoAndInternal.toInternal(mo)
+    val t = MongoAndInternal.toInternal(mo).getImmutable
 
     val rc = new RecordConverter(t)
     val r = rc.getSchemaRecord(replacement)
@@ -36,7 +36,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
     val mo = MongoDBObject("a" -> 1) ++ ("b" -> "2") ++ ("c" -> 3) ++ ("d" -> 4) ++ ("e" -> 5)
     val replacement = MongoDBObject("e" -> 5) ++ ("b" -> "2") ++ ("d" -> 4)
 
-    val t = MongoAndInternal.toInternal(mo)
+    val t = MongoAndInternal.toInternal(mo).getImmutable
 
     val rc = new RecordConverter(t)
     val r = rc.getSchemaRecord(replacement)
@@ -57,7 +57,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
     val replacement1 = MongoDBObject("a" -> 1) ++ ("c" -> 3) ++ ("d" -> 4) ++ ("e" -> 5)
     val replacement = MongoDBObject("e" -> 5) ++ ("b" -> replacement1) ++ ("d" -> inner2)
 
-    val t = MongoAndInternal.toInternal(mo)
+    val t = MongoAndInternal.toInternal(mo).getImmutable
 
     val rc = new RecordConverter(t)
     val r = rc.getSchemaRecord(replacement)

@@ -26,6 +26,7 @@ object MongoAndInternal {
     kv match {
       case (k: String, a: AnyRef) => {
         val vt = a match {
+          case bt: org.bson.types.ObjectId => AtomicType(StringType)
           case s:String => AtomicType(StringType)
           case i:Integer => AtomicType(IntegerType)
           case o:BasicDBObject => toInternal(o)

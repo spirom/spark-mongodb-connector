@@ -6,7 +6,7 @@ import org.scalatest._
 
 
 
-class ReadTests extends FlatSpec with Matchers {
+class RDDReadTests extends FlatSpec with Matchers {
 
 
 
