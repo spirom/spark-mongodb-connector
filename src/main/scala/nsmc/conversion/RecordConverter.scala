@@ -1,11 +1,10 @@
 package nsmc.conversion
 
 import com.mongodb.casbah.Imports._
-import nsmc.conversion.types.{ImmutableStructureType, AtomicType, ConversionType, StructureType}
+import nsmc.conversion.types.{StructureType, ConversionType}
 import org.apache.spark.sql.catalyst.expressions.Row
-import org.apache.spark.sql.catalyst.types.{IntegerType, StringType}
 
-class RecordConverter(internalType: ImmutableStructureType) extends Serializable {
+class RecordConverter(internalType: StructureType) extends Serializable {
 
   def getSchemaRecord(mongoRecord: DBObject) : Row = {
     convert(mongoRecord, internalType)
@@ -13,13 +12,13 @@ class RecordConverter(internalType: ImmutableStructureType) extends Serializable
 
   private def convert(mongoVal: AnyRef, fieldType: ConversionType) : AnyRef = {
     mongoVal match {
-      case o:DBObject => convert(o, fieldType.asInstanceOf[ImmutableStructureType])
+      case o:DBObject => convert(o, fieldType.asInstanceOf[StructureType])
 
       case x => x
     }
   }
 
-  private def convert(mongoRecord: DBObject, internalType: ImmutableStructureType) : Row = {
+  private def convert(mongoRecord: DBObject, internalType: StructureType) : Row = {
 
     // Only include the fields that are found. But since a Row is positional, it's necessary to
     // (a) include a null when the field is not present

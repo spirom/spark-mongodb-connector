@@ -1,9 +1,8 @@
 package nsmc.sql
 
 import com.mongodb.DBObject
-import com.mongodb.casbah.commons.MongoDBObject
 import nsmc._
-import nsmc.conversion.types.{ImmutableStructureType, StructureType}
+import nsmc.conversion.types.{StructureType}
 import nsmc.conversion.{RecordConverter, SchemaAccumulator}
 
 import org.apache.spark.rdd.RDD
@@ -17,7 +16,7 @@ import scala.collection.Iterator
 object PartitionRecordConverter {
   // each partition gets its own converter as there's no reason for the record
   // converters to communicate with each other
-  def convert(internalSchema: ImmutableStructureType)(in: Iterator[DBObject]) : Iterator[Row] = {
+  def convert(internalSchema: StructureType)(in: Iterator[DBObject]) : Iterator[Row] = {
     val rc = new RecordConverter(internalSchema)
     in.map(mo => rc.getSchemaRecord(mo))
   }
@@ -56,7 +55,8 @@ case class MongoTableScan(database: String, collection: String)
   }
 
   def buildScan: RDD[Row] = {
-    val converter = PartitionRecordConverter.convert(internalSchema.getImmutable) _
+    val schema = internalSchema
+    val converter = PartitionRecordConverter.convert(schema) _
     data.mapPartitions(converter, preservesPartitioning = true)
   }
 }
