@@ -10,7 +10,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.expressions.Row
 import org.apache.spark.sql.catalyst.types.StructType
-import org.apache.spark.sql.sources.{Filter, PrunedFilteredScan, RelationProvider}
+import org.apache.spark.sql.sources.{TableScan, Filter, PrunedFilteredScan, RelationProvider}
 
 import scala.collection.Iterator
 
@@ -25,7 +25,7 @@ object PartitionRecordConverter {
 
 case class MongoTableScan(database: String, collection: String)
                         (@transient val sqlContext: SQLContext)
-  extends PrunedFilteredScan with Logging {
+  extends TableScan with Logging {
 
   // TODO: think the RDD lifecycle through carefully here
 
@@ -45,7 +45,7 @@ case class MongoTableScan(database: String, collection: String)
 
   val schema: StructType = StructType(inferredSchema)
 
-  def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
+  def buildScan: RDD[Row] = {
     val converter = PartitionRecordConverter.convert(internalSchema.getImmutable) _
     data.mapPartitions(converter, preservesPartitioning = true)
   }
