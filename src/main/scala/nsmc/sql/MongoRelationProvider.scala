@@ -32,11 +32,14 @@ case class MongoTableScan(database: String, collection: String)
   logInfo(s"Registering MongoDB collection '$collection' in database '$database'")
 
   private val data = sqlContext.sparkContext.mongoCollection[DBObject](database, collection)
+
+  private val partitionSchemas = data.mapPartitions(inferType, preservesPartitioning = true)
+
+  val partialSchemas = partitionSchemas.collect()
+
   private val accum = new SchemaAccumulator()
+  accum.accumulate(partialSchemas.iterator)
 
-  val sample = data.first()
-
-  accum.considerRecord(sample)
   private val inferredSchema = accum.getSchema
 
   logDebug(s"Computed schema for collection '$collection' in database '$database'")
@@ -46,7 +49,11 @@ case class MongoTableScan(database: String, collection: String)
   val schema: StructType = StructType(inferredSchema)
   schema.printTreeString()
 
-
+  def inferType(in: Iterator[DBObject]) : Iterator[StructureType] = {
+    val accum = new SchemaAccumulator()
+    in.foreach(mo => accum.considerRecord(mo))
+    Seq(accum.getInternal).iterator
+  }
 
   def buildScan: RDD[Row] = {
     val converter = PartitionRecordConverter.convert(internalSchema.getImmutable) _

@@ -17,8 +17,8 @@ object InternalAndSchema {
     kv match {
       case (k: String, ct: ConversionType) => {
         ct match {
-          case AtomicType(dt: DataType) => StructField(k, dt, nullable = false)
-          case st: StructureType => StructField(k, StructType(toSchema(st)), nullable = false)
+          case AtomicType(dt: DataType) => StructField(k, dt, nullable = true)
+          case st: StructureType => StructField(k, StructType(toSchema(st)), nullable = true)
         }
       }
     }

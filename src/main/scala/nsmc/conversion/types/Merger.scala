@@ -1,6 +1,6 @@
 package nsmc.conversion.types
 
-import scala.collection.mutable.HashMap
+import scala.collection.immutable.HashMap
 
 object Merger {
   def merge(l: ConversionType, r: ConversionType) : ConversionType = {
