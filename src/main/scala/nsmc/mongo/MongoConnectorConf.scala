@@ -48,7 +48,7 @@ object MongoConnectorConf extends nsmc.Logging {
     logDebug(s"host='$host' port='$port' user='$userString' password='$passwordString'")
 
     logDebug(s"$PartitioningSplitIndexedProperty=$splitIndexed")
-    logDebug(s"$PartitioningSplitSizeProperty=${splitSize}")
+    logDebug(s"$PartitioningSplitSizeProperty=$splitSize")
     logDebug(s"$PartitioningDirectToShardsProperty=$directToShards")
     logDebug(s"$PartitioningUseShardChunksProperty=$useShardChunks")
 

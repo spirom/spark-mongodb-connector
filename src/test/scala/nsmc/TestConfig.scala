@@ -20,6 +20,7 @@ object TestConfig {
   val basicDB = "test"
   val basicCollection = "simple"
   val indexedCollection = "simple"
+  val scratchCollection = "scratch"
 
   val shardedDB = "shardedtest"
   val shardedCollection = "one"

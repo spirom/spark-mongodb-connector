@@ -44,6 +44,9 @@ case class MongoTableScan(database: String, collection: String)
   private val internalSchema = accum.getInternal
 
   val schema: StructType = StructType(inferredSchema)
+  schema.printTreeString()
+
+
 
   def buildScan: RDD[Row] = {
     val converter = PartitionRecordConverter.convert(internalSchema.getImmutable) _
