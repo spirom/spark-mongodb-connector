@@ -1,7 +1,7 @@
 package nsmc.conversion
 
 import com.mongodb.casbah.Imports._
-import nsmc.conversion.types.{StructureType, ConversionType}
+import nsmc.conversion.types.{SequenceType, StructureType, ConversionType}
 import org.apache.spark.sql.catalyst.expressions.Row
 
 class RecordConverter(internalType: StructureType) extends Serializable {
@@ -12,8 +12,8 @@ class RecordConverter(internalType: StructureType) extends Serializable {
 
   private def convert(mongoVal: AnyRef, fieldType: ConversionType) : AnyRef = {
     mongoVal match {
+      case o:BasicDBList => Seq(o.map(e => convert(e.asInstanceOf[AnyRef], fieldType.asInstanceOf[SequenceType].elementType)):_*)
       case o:DBObject => convert(o, fieldType.asInstanceOf[StructureType])
-
       case x => x
     }
   }

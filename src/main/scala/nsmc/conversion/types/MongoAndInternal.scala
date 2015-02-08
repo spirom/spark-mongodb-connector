@@ -1,6 +1,7 @@
 package nsmc.conversion.types
 
 import com.mongodb.casbah.Imports._
+import nsmc.conversion.SchemaAccumulator
 import org.apache.spark.sql.catalyst.types.{IntegerType, StringType}
 
 import scala.collection.immutable.HashMap
@@ -22,15 +23,24 @@ object MongoAndInternal {
     new StructureType(hm)
   }
 
+  def toInternal(a: AnyRef) : ConversionType = {
+    a match {
+      case bt: org.bson.types.ObjectId => AtomicType(StringType)
+      case s:String => AtomicType(StringType)
+      case i:Integer => AtomicType(IntegerType)
+      case o:BasicDBObject => toInternal(o)
+      case l:BasicDBList => {
+        val sa = new SchemaAccumulator
+        l.foreach(dbo => sa.considerDatum(dbo.asInstanceOf[AnyRef]))
+        SequenceType(sa.getInternal)
+      }
+    }
+  }
+
   def toInternal(kv: Pair[String, AnyRef]) : (String, ConversionType) = {
     kv match {
       case (k: String, a: AnyRef) => {
-        val vt = a match {
-          case bt: org.bson.types.ObjectId => AtomicType(StringType)
-          case s:String => AtomicType(StringType)
-          case i:Integer => AtomicType(IntegerType)
-          case o:BasicDBObject => toInternal(o)
-        }
+        val vt = toInternal(a)
         (k, vt)
       }
     }

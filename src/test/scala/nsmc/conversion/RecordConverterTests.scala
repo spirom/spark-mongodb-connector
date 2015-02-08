@@ -1,7 +1,7 @@
 package nsmc.conversion
 
 import com.mongodb.casbah.Imports._
-import nsmc.conversion.types.MongoAndInternal
+import nsmc.conversion.types.{StructureType, MongoAndInternal}
 import org.apache.spark.sql.Row
 import org.scalatest.{Matchers, FlatSpec}
 
@@ -10,7 +10,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
   "a flat record with no gaps in the right order" should "convert correctly" in {
     val mo = MongoDBObject("key" -> "hello") ++ ("val" -> 99)
     val t = MongoAndInternal.toInternal(mo)
-    val rc = new RecordConverter(t)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
     val r = rc.getSchemaRecord(mo)
 
     r.size should be (2)
@@ -24,7 +24,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
 
     val t = MongoAndInternal.toInternal(mo)
 
-    val rc = new RecordConverter(t)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
     val r = rc.getSchemaRecord(replacement)
 
     r should have size (2)
@@ -38,7 +38,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
 
     val t = MongoAndInternal.toInternal(mo)
 
-    val rc = new RecordConverter(t)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
     val r = rc.getSchemaRecord(replacement)
 
     r should have size (5)
@@ -59,7 +59,7 @@ class RecordConverterTests extends FlatSpec with Matchers {
 
     val t = MongoAndInternal.toInternal(mo)
 
-    val rc = new RecordConverter(t)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
     val r = rc.getSchemaRecord(replacement)
 
     r should have size (5)
@@ -87,4 +87,46 @@ class RecordConverterTests extends FlatSpec with Matchers {
 
   }
 
+  "a record with an atomic array" should "convert correctly" in {
+    val l:BasicDBList = MongoDBList(1,2,3)
+    val mo = MongoDBObject("key" -> "hello") ++ ("val" -> l)
+    val t = MongoAndInternal.toInternal(mo)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
+    val r = rc.getSchemaRecord(mo)
+
+    r.size should be (2)
+    r.getString(0) should be ("hello")
+    val s = r.getAs[Seq[Int]](1)
+    s.size should be (3)
+    s(0) should be (1)
+    s(1) should be (2)
+    s(2) should be (3)
+  }
+
+  "a record with a structured array" should "convert correctly" in {
+    val inner1 = MongoDBObject("a" -> 1) ++ ("b" -> 2)
+    val inner2 = MongoDBObject("b" -> 3) ++ ("c" -> 4)
+    val l:BasicDBList = MongoDBList(inner1, inner2)
+    val mo = MongoDBObject("key" -> "hello") ++ ("val" -> l)
+    val t = MongoAndInternal.toInternal(mo)
+    val rc = new RecordConverter(t.asInstanceOf[StructureType])
+    val r = rc.getSchemaRecord(mo)
+
+    r.size should be (2)
+    r.getString(0) should be ("hello")
+    val s = r.getAs[Seq[Row]](1)
+    s.size should be (2)
+    s(0) shouldBe a [Row]
+    val r1 = s(0).asInstanceOf[Row]
+    r1 should have size 3
+    r1.getInt(0) should be (1)
+    r1.getInt(1) should be (2)
+    r1.isNullAt(2) should be (true)
+    s(1) shouldBe a [Row]
+    val r2 = s(1).asInstanceOf[Row]
+    r2 should have size 3
+    r2.isNullAt(0) should be (true)
+    r2.getInt(1) should be (3)
+    r2.getInt(2) should be (4)
+  }
 }

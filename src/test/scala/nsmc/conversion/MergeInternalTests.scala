@@ -116,4 +116,16 @@ class MergeInternalTests extends FlatSpec with Matchers {
     inner("z") should be (new AtomicType(StringType))
     hm("c") should be (new AtomicType(StringType))
   }
+
+  "atomic array types" should "merge correctly" ignore {
+
+  }
+
+  "structured array types" should "merge correctly" ignore {
+
+  }
+
+  "nested array types" should "merge correctly" ignore {
+
+  }
 }

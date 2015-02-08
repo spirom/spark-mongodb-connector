@@ -50,13 +50,13 @@ case class MongoTableScan(database: String, collection: String)
 
   def inferType(in: Iterator[DBObject]) : Iterator[StructureType] = {
     val accum = new SchemaAccumulator()
-    in.foreach(mo => accum.considerRecord(mo))
-    Seq(accum.getInternal).iterator
+    in.foreach(mo => accum.considerDatum(mo))
+    Seq(accum.getInternal.asInstanceOf[StructureType]).iterator
   }
 
   def buildScan: RDD[Row] = {
     val schema = internalSchema
-    val converter = PartitionRecordConverter.convert(schema) _
+    val converter = PartitionRecordConverter.convert(schema.asInstanceOf[StructureType]) _
     data.mapPartitions(converter, preservesPartitioning = true)
   }
 }

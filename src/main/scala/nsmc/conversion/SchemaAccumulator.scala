@@ -8,24 +8,39 @@ import org.apache.spark.sql._
 import scala.collection.immutable.HashMap
 
 class SchemaAccumulator {
-  private var currentInternal = new StructureType(new HashMap[String, ConversionType]())
+  private var currentInternal: Option[ConversionType] = None
 
-  def considerRecord(rec: DBObject) : Unit = {
-    val recInternalType = MongoAndInternal.toInternal(rec)
-    currentInternal = Merger.merge(recInternalType, currentInternal).asInstanceOf[StructureType]
+  private def maybeMerge(l: ConversionType, ro: Option[ConversionType]) : ConversionType = {
+    ro match {
+      case Some(r) => Merger.merge(l, r)
+      case None => l
+    }
+  }
+
+  def considerDatum(datum: AnyRef) : Unit = {
+    val recInternalType = MongoAndInternal.toInternal(datum)
+    currentInternal = Some(maybeMerge(recInternalType, currentInternal))
   }
 
   def accumulate(types: Iterator[StructureType]) : Unit = {
     types.foreach(ty => {
-      currentInternal = Merger.merge(ty, currentInternal).asInstanceOf[StructureType]
+      currentInternal = Some(maybeMerge(ty, currentInternal))
     })
   }
 
-  def getInternal : StructureType = {
-    currentInternal
+  def getInternal : ConversionType = {
+    currentInternal match {
+      case Some(i) => i
+      case None => new StructureType(new HashMap[String, ConversionType]())
+    }
   }
 
+  // should only be called for a top level (record) schema
   def getSchema : Seq[StructField] = {
-    InternalAndSchema.toSchema(currentInternal)
+    currentInternal match {
+      case Some(i) => InternalAndSchema.toSchema(i).asInstanceOf[StructType].fields
+      case None => Seq()
+    }
+
   }
 }

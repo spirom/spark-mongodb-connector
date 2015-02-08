@@ -22,7 +22,7 @@ libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 
 // testing stuff below here
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.46.1" % "test"
 
