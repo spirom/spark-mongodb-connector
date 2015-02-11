@@ -76,11 +76,15 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.connection.host", TestConfig.mongodHost)
         .set("nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
-    val data = sc.mongoCollection(TestConfig.basicDB,TestConfig.basicCollection)
+    val data = sc.mongoCollection[DBObject](TestConfig.basicDB,TestConfig.basicCollection)
 
-    data.count() should be (300000)
-    data.getPartitions.length should be (1)
-    sc.stop()
+    try {
+      data.count() should be(300000)
+      val c = data.collect()
+      data.getPartitions.length should be(1)
+    } finally {
+      sc.stop()
+    }
   }
 
   "an unsharded, indexed collection" should "get partitioned correctly" in {
