@@ -1,7 +1,7 @@
 package nsmc
 
 import com.mongodb.casbah.Imports._
-import org.apache.spark.sql.catalyst.types.{StringType, IntegerType, StructField}
+import org.apache.spark.sql.catalyst.types._
 import org.apache.spark.sql.{StructType, SQLContext}
 import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{Matchers, FlatSpec}
@@ -341,6 +341,63 @@ class SQLTests extends FlatSpec with Matchers {
       r2 should have size (1)
       r2(0) should be (5)
 
+
+    } finally {
+      sc.stop()
+    }
+
+  }
+
+  "various atomic types" should "query correctly" in {
+    val mongoClient = MongoClient(TestConfig.mongodHost, TestConfig.mongodPort.toInt)
+    val db = mongoClient.getDB("test")
+
+    try {
+      val col = db(TestConfig.scratchCollection)
+      col.drop()
+
+      col += MongoDBObject("f1" -> 1) ++ ("f2" -> 3.14) ++ ("f3" -> "hello") ++ ("f4" -> false)
+    } finally {
+      mongoClient.close()
+    }
+
+    val conf =
+      new SparkConf()
+        .setAppName("MongoReader").setMaster("local[4]")
+        .set("nsmc.connection.host", TestConfig.mongodHost)
+        .set("nsmc.connection.port", TestConfig.mongodPort)
+    val sc = new SparkContext(conf)
+
+    val sqlContext = new SQLContext(sc)
+
+    try {
+
+      sqlContext.sql(
+        s"""
+        |CREATE TEMPORARY TABLE dataTable
+        |USING nsmc.sql.MongoRelationProvider
+        |OPTIONS (db '${TestConfig.basicDB}', collection '${TestConfig.scratchCollection}')
+      """.stripMargin)
+
+      val data =
+        sqlContext.sql("SELECT f1, f2, f3, f4 FROM dataTable")
+
+      val fields = data.schema.fields
+
+      fields should have size (4)
+      fields(0) should be (new StructField("f1", IntegerType, true))
+      fields(1) should be (new StructField("f2", DoubleType, true))
+      fields(2) should be (new StructField("f3", StringType, true))
+      fields(3) should be (new StructField("f4", BooleanType, true))
+
+      val recs = data.collect()
+      recs should have size (1)
+      val first = recs(0)
+      first should have size (4)
+      first(0) should be (1)
+      first(1) should be (3.14)
+      first(2) should be ("hello")
+      first(3) should equal (false)
 
     } finally {
       sc.stop()
