@@ -1,8 +1,10 @@
 package nsmc.conversion.types
 
+import java.util.Date
+
 import com.mongodb.casbah.Imports._
 import nsmc.conversion.SchemaAccumulator
-import org.apache.spark.sql.catalyst.types.{BooleanType, DoubleType, IntegerType, StringType}
+import org.apache.spark.sql.catalyst.types._
 
 import scala.collection.immutable.HashMap
 
@@ -25,7 +27,15 @@ object MongoAndInternal {
 
   def toInternal(a: AnyRef) : ConversionType = {
     a match {
+      case d: Date => AtomicType(TimestampType)
+      case bts: BSONTimestamp => {
+        val s = Seq("inc" -> AtomicType(IntegerType), "time" -> AtomicType(IntegerType))
+        StructureType(HashMap[String, ConversionType](s: _*))
+      }
+      case ba: Array[Byte] => AtomicType(BinaryType)
       case bt: org.bson.types.ObjectId => AtomicType(StringType)
+      case _: java.lang.Long => AtomicType(LongType)
+      case _: java.lang.Byte => AtomicType(ByteType)
       case _: java.lang.Double => AtomicType(DoubleType)
       case _: java.lang.Boolean => AtomicType(BooleanType)
       case _:String => AtomicType(StringType)

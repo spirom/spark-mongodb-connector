@@ -1,9 +1,12 @@
 package nsmc
 
+import java.util.Date
+
 import com.mongodb.casbah.Imports._
 import org.apache.spark.sql.catalyst.types._
 import org.apache.spark.sql.{StructType, SQLContext}
 import org.apache.spark.{SparkContext, SparkConf}
+import org.bson.types.BSONTimestamp
 import org.scalatest.{Matchers, FlatSpec}
 
 
@@ -34,7 +37,7 @@ class SQLTests extends FlatSpec with Matchers {
       fields should have size (3)
       fields(0) should be (new StructField("_id", StringType, true))
       fields(1) should be (new StructField("key", IntegerType, true))
-      fields(2) should be (new StructField("s", StringType, true))
+      fields(2) should be (new StructField("s", BinaryType, true))
 
       data.count() should be(300000)
       val firstRec = data.first()
@@ -356,7 +359,14 @@ class SQLTests extends FlatSpec with Matchers {
       val col = db(TestConfig.scratchCollection)
       col.drop()
 
-      col += MongoDBObject("f1" -> 1) ++ ("f2" -> 3.14) ++ ("f3" -> "hello") ++ ("f4" -> false)
+      col += MongoDBObject("f1" -> 1) ++
+        ("f2" -> 3.14) ++
+        ("f3" -> "hello") ++
+        ("f4" -> false) ++
+        ("f5" -> 5000000000L) ++
+        ("f6" -> Array[Byte](1, 2, 3)) ++
+        ("f7" -> new BSONTimestamp(256, 2)) ++
+        ("f8" -> new Date(0))
     } finally {
       mongoClient.close()
     }
@@ -380,24 +390,32 @@ class SQLTests extends FlatSpec with Matchers {
       """.stripMargin)
 
       val data =
-        sqlContext.sql("SELECT f1, f2, f3, f4 FROM dataTable")
+        sqlContext.sql("SELECT f1, f2, f3, f4, f5, f6, f7, f8 FROM dataTable")
 
       val fields = data.schema.fields
 
-      fields should have size (4)
+      fields should have size (8)
       fields(0) should be (new StructField("f1", IntegerType, true))
       fields(1) should be (new StructField("f2", DoubleType, true))
       fields(2) should be (new StructField("f3", StringType, true))
       fields(3) should be (new StructField("f4", BooleanType, true))
+      fields(4) should be (new StructField("f5", LongType, true))
+      fields(5) should be (new StructField("f6", BinaryType, true))
+      fields(6) should be (StructField("f7",StructType(List(StructField("inc",IntegerType,true), StructField("time",IntegerType,true))),true))
+      fields(7) should be (new StructField("f8", TimestampType, true))
 
       val recs = data.collect()
       recs should have size (1)
       val first = recs(0)
-      first should have size (4)
+      first should have size (8)
       first(0) should be (1)
       first(1) should be (3.14)
       first(2) should be ("hello")
       first(3) should equal (false)
+      first(4) should equal (5000000000L)
+      first(5) should equal (Array[Byte](1, 2, 3))
+      first(6) should equal (new BSONTimestamp(256, 2))
+      first(7) should be (new Date(0))
 
     } finally {
       sc.stop()
