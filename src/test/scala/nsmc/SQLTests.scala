@@ -37,7 +37,7 @@ class SQLTests extends FlatSpec with Matchers {
       fields should have size (3)
       fields(0) should be (new StructField("_id", StringType, true))
       fields(1) should be (new StructField("key", IntegerType, true))
-      fields(2) should be (new StructField("s", BinaryType, true))
+      fields(2) should be (new StructField("s", StringType, true))
 
       data.count() should be(300000)
       val firstRec = data.first()
