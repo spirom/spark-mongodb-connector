@@ -46,7 +46,6 @@ case class MongoTableScan(database: String, collection: String)
   private val internalSchema = accum.getInternal
 
   val schema: StructType = StructType(inferredSchema)
-  schema.printTreeString()
 
   def inferType(in: Iterator[DBObject]) : Iterator[StructureType] = {
     val accum = new SchemaAccumulator()
