@@ -115,7 +115,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
     val numberedKeys = indexedKeys.zipWithIndex
     val builder = MongoDBObject.newBuilder
     // caution: indexes are zero-based but Mongo needs 1-based key sequence
-    numberedKeys.foreach({ case (k:String, i: Int) => builder += (k -> (i + 1)) })
+    numberedKeys.foreach({ case (k:String, i: Int) => builder += (k -> 1)})
     builder.result()
   }
 
@@ -147,6 +147,7 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
         splitKeys.foreach(o => {
           val kv = o.asInstanceOf[BasicDBObject]
           val interval = makeInterval(previous, kv, destination)
+          logDebug(s"Generated interval ${interval.min},${interval.max} for collection '$collectionName' in database '$dbName'")
           intervals += interval
           previous = kv
         })

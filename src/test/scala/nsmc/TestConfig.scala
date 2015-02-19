@@ -20,6 +20,7 @@ object TestConfig {
   val basicDB = "test"
   val basicCollection = "simple"
   val indexedCollection = "simple"
+  val doubleIndexedCollection = "double"
   val scratchCollection = "scratch"
 
   val shardedDB = "shardedtest"
@@ -44,7 +45,24 @@ object TestConfig {
     }
   }
 
+  def makeDoubleIndexedCollection(): Unit = {
+    val mongoClient = MongoClient(TestConfig.mongodHost, TestConfig.mongodPort.toInt)
+
+    val db = mongoClient.getDB(basicDB)
+    if (db.collectionExists(doubleIndexedCollection)) {
+      db(doubleIndexedCollection).drop()
+    }
+    val col = db(doubleIndexedCollection)
+
+    for (i <- 1 to 300000)
+    {
+      col += MongoDBObject("key" -> i) ++ ("s" -> ("K_" + i))
+    }
+
+    col.ensureIndex(DBObject("key" -> 1, "s" -> 1))
+  }
+
   def main (args: Array[String]) {
-    makAuthCollection()
+    makeDoubleIndexedCollection()
   }
 }
