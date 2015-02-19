@@ -96,7 +96,7 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.split.indexed.collections", "true")
         .set("nsmc.split.chunk.size", "4")
     val sc = new SparkContext(conf)
-    val indexedKeys = Seq("key")
+    val indexedKeys = Seq(("key", 1))
     val data = sc.mongoCollection(TestConfig.basicDB,
       TestConfig.indexedCollection, indexedKeys)
 
@@ -114,7 +114,7 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.split.indexed.collections", "true")
         .set("nsmc.split.chunk.size", "4")
     val sc = new SparkContext(conf)
-    val indexedKeys = Seq("key", "s")
+    val indexedKeys = Seq(("key", 1), ("s", -1))
     val data = sc.mongoCollection(TestConfig.basicDB,
       TestConfig.doubleIndexedCollection, indexedKeys)
 
@@ -132,7 +132,7 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.partition.on.shard.chunks", "true")
         .set("nsmc.direct.to.shards", "true")
     val sc = new SparkContext(conf)
-    val indexedKeys = Seq("key")
+    val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 
@@ -150,7 +150,7 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.partition.on.shard.chunks", "true")
         .set("nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
-    val indexedKeys = Seq("key")
+    val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 
@@ -168,7 +168,7 @@ class RDDReadTests extends FlatSpec with Matchers {
         .set("nsmc.partition.on.shard.chunks", "false")
         .set("nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
-    val indexedKeys = Seq("key")
+    val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
       TestConfig.shardedCollection, indexedKeys)
 

@@ -111,16 +111,15 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
 
   // Convert a sequence of names of key columns to create a MongoDBObject containing
   // a "keyPattern"
-  private def makeKeyPattern(indexedKeys: Seq[String]) : MongoDBObject = {
-    val numberedKeys = indexedKeys.zipWithIndex
+  private def makeKeyPattern(indexedKeys: Seq[(String,Any)]) : MongoDBObject = {
     val builder = MongoDBObject.newBuilder
     // caution: indexes are zero-based but Mongo needs 1-based key sequence
-    numberedKeys.foreach({ case (k:String, i: Int) => builder += (k -> 1)})
+    indexedKeys.foreach({ case (k, v) => builder += (k -> v)})
     builder.result()
   }
 
   // get intervals for an un-sharded collection as suggested by MongoDB
-  def generateSyntheticIntervals(maxChunkSize: Int, indexedKeys: Seq[String]) : Seq[MongoInterval] = {
+  def generateSyntheticIntervals(maxChunkSize: Int, indexedKeys: Seq[(String,Any)]) : Seq[MongoInterval] = {
     logDebug(s"Generating synthetic intervals for collection '$collectionName' in database '$dbName' with maxChunkSize='$maxChunkSize'")
     logDebug(s"IndexedKeys: ${indexedKeys.map(k => "[" + k + "]").mkString(", ")}")
     val keyPattern = makeKeyPattern(indexedKeys)

@@ -59,7 +59,7 @@ object TestConfig {
       col += MongoDBObject("key" -> i) ++ ("s" -> ("K_" + i))
     }
 
-    col.ensureIndex(DBObject("key" -> 1, "s" -> 1))
+    col.ensureIndex(DBObject("key" -> 1, "s" -> -1))
   }
 
   def main (args: Array[String]) {
