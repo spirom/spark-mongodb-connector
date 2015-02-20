@@ -6,12 +6,13 @@ import nsmc.conversion.types.{StructureType}
 import nsmc.conversion.{RecordConverter, SchemaAccumulator}
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{StructField, SQLContext}
 import org.apache.spark.sql.catalyst.expressions.Row
 import org.apache.spark.sql.catalyst.types.StructType
 import org.apache.spark.sql.sources.{TableScan, Filter, PrunedFilteredScan, RelationProvider}
 
 import scala.collection.Iterator
+import scala.collection.immutable.HashMap
 
 object PartitionRecordConverter {
   // each partition gets its own converter as there's no reason for the record
@@ -22,9 +23,21 @@ object PartitionRecordConverter {
   }
 }
 
+object RowProjector {
+  def projectRow(wholeRow: Row,
+                         positionalMap: Map[String, Int],
+                         requiredColumns: Array[String]): Row = {
+    val projected = requiredColumns.map(colName => {
+      val pos = positionalMap(colName)
+      wholeRow(pos)
+    })
+    Row(projected:_*)
+  }
+}
+
 case class MongoTableScan(database: String, collection: String)
                         (@transient val sqlContext: SQLContext)
-  extends TableScan with Logging {
+  extends PrunedFilteredScan with Logging {
 
   // TODO: think the RDD lifecycle through carefully here
 
@@ -53,10 +66,17 @@ case class MongoTableScan(database: String, collection: String)
     Seq(accum.getInternal.asInstanceOf[StructureType]).iterator
   }
 
-  def buildScan: RDD[Row] = {
+  private def makePositionalMap(fields: Seq[StructField]) : Map[String, Int] = {
+    HashMap[String, Int](fields.map(f => f.name).zipWithIndex:_*)
+  }
+
+  def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val schema = internalSchema
     val converter = PartitionRecordConverter.convert(schema.asInstanceOf[StructureType]) _
-    data.mapPartitions(converter, preservesPartitioning = true)
+    val allData = data.mapPartitions(converter, preservesPartitioning = true)
+    val positionalMap = makePositionalMap(inferredSchema)
+    val projected = allData.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))
+    projected
   }
 }
 
