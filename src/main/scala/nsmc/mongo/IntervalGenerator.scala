@@ -113,7 +113,6 @@ class IntervalGenerator(dest: Destination, dbName: String, collectionName: Strin
   // a "keyPattern"
   private def makeKeyPattern(indexedKeys: Seq[(String,Any)]) : MongoDBObject = {
     val builder = MongoDBObject.newBuilder
-    // caution: indexes are zero-based but Mongo needs 1-based key sequence
     indexedKeys.foreach({ case (k, v) => builder += (k -> v)})
     builder.result()
   }
