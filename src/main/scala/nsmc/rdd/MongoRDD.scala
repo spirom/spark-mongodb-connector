@@ -16,6 +16,8 @@ class MongoRDD[R] private[nsmc] (@transient sc: SparkContext,
                                 (implicit ct : ClassTag[R])
   extends RDD[R](sc, Seq.empty) with Logging {
 
+  // TODO: make this use the collection proxy
+
   // make sure we inherit logging from the right place: out own Logging class and not RDD
   override def log = super[Logging].log
   override def logName = super[Logging].logName

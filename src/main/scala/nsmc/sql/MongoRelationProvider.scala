@@ -4,6 +4,9 @@ import com.mongodb.DBObject
 import nsmc._
 import nsmc.conversion.types.{StructureType}
 import nsmc.conversion.{RecordConverter, SchemaAccumulator}
+import nsmc.mongo._
+import nsmc.rdd.partitioner.MongoRDDPartition
+import nsmc.rdd.{SQLMongoRDD, MongoRDD}
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{StructField, SQLContext}
@@ -35,17 +38,42 @@ object RowProjector {
   }
 }
 
+class InferenceWrapper(proxy: CollectionProxy) extends Serializable {
+  def inferType(part: MongoRDDPartition) : StructureType = {
+    val conn = proxy.getPartitionConnector(part)
+    val st = inferType(conn)
+    conn.close()
+    st
+  }
+
+  private def inferType(conn: MongoConnector) : StructureType = {
+    val in = conn.getData
+    val accum = new SchemaAccumulator()
+    in.foreach(mo => accum.considerDatum(mo))
+    accum.getInternal.asInstanceOf[StructureType]
+  }
+}
+
 case class MongoTableScan(database: String, collection: String)
                         (@transient val sqlContext: SQLContext)
   extends PrunedFilteredScan with Logging {
 
-  // TODO: think the RDD lifecycle through carefully here
+  // TODO: make sure we clean up if there's an error
 
   logInfo(s"Registering MongoDB collection '$collection' in database '$database'")
 
-  private val data = sqlContext.sparkContext.mongoCollection[DBObject](database, collection)
+  // TODO: plumb indexedKeys
+  private val collectionConfig = new CollectionConfig(MongoConnectorConf(sqlContext.sparkContext.getConf), database, collection, Seq())
 
-  private val partitionSchemas = data.mapPartitions(inferType, preservesPartitioning = true)
+  private val proxy = new CollectionProxy(collectionConfig)
+
+  private val splits = proxy.getPartitions.map(s => s.asInstanceOf[MongoRDDPartition])
+
+  private val partitionRDD = sqlContext.sparkContext.parallelize(splits, splits.size)
+
+  private val inference = new InferenceWrapper(proxy)
+
+  private val partitionSchemas = partitionRDD.map(inference.inferType)
 
   val partialSchemas = partitionSchemas.collect()
 
@@ -60,11 +88,7 @@ case class MongoTableScan(database: String, collection: String)
 
   val schema: StructType = StructType(inferredSchema)
 
-  def inferType(in: Iterator[DBObject]) : Iterator[StructureType] = {
-    val accum = new SchemaAccumulator()
-    in.foreach(mo => accum.considerDatum(mo))
-    Seq(accum.getInternal.asInstanceOf[StructureType]).iterator
-  }
+
 
   private def makePositionalMap(fields: Seq[StructField]) : Map[String, Int] = {
     HashMap[String, Int](fields.map(f => f.name).zipWithIndex:_*)
@@ -73,11 +97,17 @@ case class MongoTableScan(database: String, collection: String)
   def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
     val schema = internalSchema
     val converter = PartitionRecordConverter.convert(schema.asInstanceOf[StructureType]) _
-    val allData = data.mapPartitions(converter, preservesPartitioning = true)
+    val queryGenerator = new QueryGenerator()
+    //val projectionObject = queryGenerator.makeProjection(requiredColumns)
+
+    val queryData = new SQLMongoRDD(sqlContext.sparkContext, proxy)
+    val allRows = queryData.mapPartitions(converter, preservesPartitioning = true)
     val positionalMap = makePositionalMap(inferredSchema)
-    val projected = allData.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))
+    val projected = allRows.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))
+
     projected
   }
+
 }
 
 class MongoRelationProvider extends RelationProvider {

@@ -7,4 +7,4 @@ private[nsmc]
 case class MongoRDDPartition(index: Int,
                              rowCount: Long,
                              interval: MongoInterval)
-  extends Partition
+  extends Partition with Serializable

@@ -14,4 +14,5 @@ class ContextFunctions(@transient val sc: SparkContext) extends Serializable {
     val collectionConfig = new CollectionConfig(MongoConnectorConf(sc.getConf), databaseName, collectionName, indexedKeys)
     new MongoRDD[T](sc, collectionConfig)
   }
+
 }
