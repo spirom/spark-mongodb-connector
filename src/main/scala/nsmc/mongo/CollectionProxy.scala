@@ -12,16 +12,21 @@ class CollectionProxy(val collectionConfig: CollectionConfig) extends Logging wi
   var cachedPartitions: Option[Array[Partition]] = None
 
   def getPartitions: Array[Partition] = {
-    val partitioner = new MongoRDDPartitioner(collectionConfig)
-    logDebug(s"Created partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-    try {
-      val partitions = partitioner.makePartitions()
-      logInfo(s"Obtained ${partitions.size} partitions for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-      cachedPartitions = Some(partitions)
-      partitions
-    } finally {
-      partitioner.close()
-      logDebug(s"Closed partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
+    cachedPartitions match {
+      case Some(parts) => parts
+      case None => {
+        val partitioner = new MongoRDDPartitioner(collectionConfig)
+        logDebug(s"Created partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
+        try {
+          val partitions = partitioner.makePartitions()
+          logInfo(s"Obtained ${partitions.size} partitions for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
+          cachedPartitions = Some(partitions)
+          partitions
+        } finally {
+          partitioner.close()
+          logDebug(s"Closed partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
+        }
+      }
     }
   }
 
