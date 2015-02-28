@@ -2,8 +2,7 @@ package nsmc.rdd
 
 import com.mongodb.DBObject
 import nsmc.Logging
-import nsmc.mongo.{CollectionProxy, CollectionConfig, MongoConnector}
-import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
+import nsmc.mongo.CollectionProxy
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 

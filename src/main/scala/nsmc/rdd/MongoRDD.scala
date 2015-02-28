@@ -1,7 +1,7 @@
 package nsmc.rdd
 
 import nsmc.Logging
-import nsmc.mongo.{CollectionConfig, MongoConnector}
+import nsmc.mongo.{CollectionConfig, MongoConnector, CollectionProxy}
 
 import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
 import org.apache.spark.rdd.RDD
@@ -16,7 +16,7 @@ class MongoRDD[R] private[nsmc] (@transient sc: SparkContext,
                                 (implicit ct : ClassTag[R])
   extends RDD[R](sc, Seq.empty) with Logging {
 
-  // TODO: make this use the collection proxy
+  private val proxy = new CollectionProxy(collectionConfig)
 
   // make sure we inherit logging from the right place: out own Logging class and not RDD
   override def log = super[Logging].log
@@ -34,29 +34,11 @@ class MongoRDD[R] private[nsmc] (@transient sc: SparkContext,
   override def isTraceEnabled() = super[Logging].isTraceEnabled()
 
   override def getPartitions: Array[Partition] = {
-    val partitioner = new MongoRDDPartitioner(collectionConfig)
-    logDebug(s"Created partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-    try {
-      val partitions = partitioner.makePartitions()
-      logInfo(s"Obtained ${partitions.size} partitions for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-      partitions
-    } finally {
-      partitioner.close()
-      logDebug(s"Closed partitioner for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-    }
+    proxy.getPartitions
   }
 
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
-    val mp = split.asInstanceOf[MongoRDDPartition]
-    logDebug(s"Computing partition ${mp.index} for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-    val mongoConnector = new MongoConnector(collectionConfig.databaseName, collectionConfig.collectionName, mp.interval)
-    val iter = mongoConnector.getData.asInstanceOf[Iterator[R]]
-    // TODO: collect statistics here
-    context.addTaskCompletionListener { (context) =>
-      mongoConnector.close()
-      logDebug(s"Computed partition ${mp.index} for collection '${collectionConfig.collectionName}' in database '${collectionConfig.databaseName}'")
-    }
-    iter
+    proxy.getPartitionIterator(split, context).asInstanceOf[Iterator[R]]
   }
 
 }
