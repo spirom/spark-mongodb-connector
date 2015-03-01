@@ -95,12 +95,17 @@ case class MongoTableScan(database: String, collection: String)
   }
 
   def buildScan(requiredColumns: Array[String], filters: Array[Filter]): RDD[Row] = {
+    // NOTE: it turns out that Spark [at least 1.2.0] sometimes calls this with an empty array of RequiredColumns, for
+    // example in order to execute RDD.count() regardless of whether it has yet had a reason to access
+    // the actual columns, and thus it produces potentially redundant queries. Presumably it doesn't trust the
+    // size of the result set to be invariant with respect the choice of projection columns.
+    logDebug(s"Scaning '$database'/'$collection' with columns ${requiredColumns.mkString("[",";","]")}")
     val schema = internalSchema
     val converter = PartitionRecordConverter.convert(schema.asInstanceOf[StructureType]) _
     val queryGenerator = new QueryGenerator()
-    //val projectionObject = queryGenerator.makeProjection(requiredColumns)
+    val projection = queryGenerator.makeProjection(requiredColumns)
 
-    val queryData = new SQLMongoRDD(sqlContext.sparkContext, proxy)
+    val queryData = new SQLMongoRDD(sqlContext.sparkContext, proxy, projection)
     val allRows = queryData.mapPartitions(converter, preservesPartitioning = true)
     val positionalMap = makePositionalMap(inferredSchema)
     val projected = allRows.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))

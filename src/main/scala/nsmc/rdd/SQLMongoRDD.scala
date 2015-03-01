@@ -10,7 +10,8 @@ import scala.language.existentials
 
 // For use only in creating an RDD to return for SQL integration
 class SQLMongoRDD private[nsmc] (@transient sc: SparkContext,
-                                 proxy: CollectionProxy)
+                                 proxy: CollectionProxy,
+                                 projection: DBObject)
   extends RDD[DBObject](sc, Seq.empty) with Logging {
 
   // make sure we inherit logging from the right place: out own Logging class and not RDD
@@ -33,7 +34,7 @@ class SQLMongoRDD private[nsmc] (@transient sc: SparkContext,
   }
 
   override def compute(split: Partition, context: TaskContext): Iterator[DBObject] = {
-    proxy.getPartitionIterator(split, context)
+    proxy.getPartitionIterator(split, context, projection)
   }
 
 }
