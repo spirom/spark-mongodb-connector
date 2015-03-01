@@ -14,6 +14,7 @@ class RecordConverter(internalType: StructureType) extends Serializable {
     mongoVal match {
       case o:BasicDBList => Seq(o.map(e => convert(e.asInstanceOf[AnyRef], fieldType.asInstanceOf[SequenceType].elementType)):_*)
       case o:DBObject => convert(o, fieldType.asInstanceOf[StructureType])
+      case oid:ObjectId => oid.toHexString()
       case x => x
     }
   }
