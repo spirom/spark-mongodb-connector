@@ -6,13 +6,13 @@ import nsmc.conversion.types.{StructureType}
 import nsmc.conversion.{RecordConverter, SchemaAccumulator}
 import nsmc.mongo._
 import nsmc.rdd.partitioner.MongoRDDPartition
-import nsmc.rdd.{SQLMongoRDD, MongoRDD}
+import nsmc.rdd.{CollectionProxy, SQLMongoRDD}
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{StructField, SQLContext}
 import org.apache.spark.sql.catalyst.expressions.Row
 import org.apache.spark.sql.catalyst.types.StructType
-import org.apache.spark.sql.sources.{TableScan, Filter, PrunedFilteredScan, RelationProvider}
+import org.apache.spark.sql.sources.{Filter, PrunedFilteredScan, RelationProvider}
 
 import scala.collection.Iterator
 import scala.collection.immutable.HashMap
@@ -103,9 +103,11 @@ case class MongoTableScan(database: String, collection: String)
     val schema = internalSchema
     val converter = PartitionRecordConverter.convert(schema.asInstanceOf[StructureType]) _
     val queryGenerator = new QueryGenerator()
-    val projection = queryGenerator.makeProjection(requiredColumns)
 
-    val queryData = new SQLMongoRDD(sqlContext.sparkContext, proxy, projection)
+    val mongoFilter = queryGenerator.makeFilter(filters)
+    val mongoProjection = queryGenerator.makeProjection(requiredColumns)
+
+    val queryData = new SQLMongoRDD(sqlContext.sparkContext, proxy, mongoFilter, mongoProjection)
     val allRows = queryData.mapPartitions(converter, preservesPartitioning = true)
     val positionalMap = makePositionalMap(inferredSchema)
     val projected = allRows.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))

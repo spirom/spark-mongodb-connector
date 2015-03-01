@@ -1,10 +1,10 @@
-package nsmc.mongo
+package nsmc.rdd
 
 import com.mongodb.{BasicDBObject, DBObject}
 import nsmc.Logging
+import nsmc.mongo.{CollectionConfig, MongoConnector}
 import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.{SparkContext, TaskContext, Partition}
+import org.apache.spark.{Partition, TaskContext}
 
 
 class CollectionProxy(val collectionConfig: CollectionConfig) extends Logging with Serializable {
@@ -37,10 +37,10 @@ class CollectionProxy(val collectionConfig: CollectionConfig) extends Logging wi
     mongoConnector
   }
 
-  def getPartitionIterator(split: Partition, context: TaskContext, projection:DBObject): Iterator[DBObject] = {
+  def getPartitionIterator(split: Partition, context: TaskContext, filter:DBObject, projection:DBObject): Iterator[DBObject] = {
     val mp = split.asInstanceOf[MongoRDDPartition]
     val mongoConnector = getPartitionConnector(mp)
-    val iter = mongoConnector.getData(new BasicDBObject(), projection)
+    val iter = mongoConnector.getData(filter, projection)
     // TODO: collect statistics here
     context.addTaskCompletionListener { (context) =>
       mongoConnector.close()

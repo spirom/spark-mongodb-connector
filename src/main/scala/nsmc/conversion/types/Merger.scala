@@ -14,6 +14,7 @@ object Merger {
             case (true, true) => (k, merge(lMap.getOrElse(k, null), rMap.getOrElse(k, null)))
             case (true, false) => (k, lMap.getOrElse(k, null))
             case (false, true) => (k, rMap.getOrElse(k, null))
+            case (false, false) => (k, null) // can't happen
           }
         })
         val ct = new StructureType(HashMap[String, ConversionType](pairs.toSeq:_*))

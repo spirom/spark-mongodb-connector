@@ -2,7 +2,7 @@ package nsmc.rdd
 
 import com.mongodb.BasicDBObject
 import nsmc.Logging
-import nsmc.mongo.{CollectionConfig, MongoConnector, CollectionProxy}
+import nsmc.mongo.{CollectionConfig, MongoConnector}
 
 import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
 import org.apache.spark.rdd.RDD
@@ -39,7 +39,7 @@ class MongoRDD[R] private[nsmc] (@transient sc: SparkContext,
   }
 
   override def compute(split: Partition, context: TaskContext): Iterator[R] = {
-    proxy.getPartitionIterator(split, context, new BasicDBObject()).asInstanceOf[Iterator[R]]
+    proxy.getPartitionIterator(split, context, new BasicDBObject(), new BasicDBObject()).asInstanceOf[Iterator[R]]
   }
 
 }

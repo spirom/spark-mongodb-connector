@@ -2,7 +2,6 @@ package nsmc.rdd
 
 import com.mongodb.DBObject
 import nsmc.Logging
-import nsmc.mongo.CollectionProxy
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{Partition, SparkContext, TaskContext}
 
@@ -11,6 +10,7 @@ import scala.language.existentials
 // For use only in creating an RDD to return for SQL integration
 class SQLMongoRDD private[nsmc] (@transient sc: SparkContext,
                                  proxy: CollectionProxy,
+                                 filter: DBObject,
                                  projection: DBObject)
   extends RDD[DBObject](sc, Seq.empty) with Logging {
 
@@ -34,7 +34,7 @@ class SQLMongoRDD private[nsmc] (@transient sc: SparkContext,
   }
 
   override def compute(split: Partition, context: TaskContext): Iterator[DBObject] = {
-    proxy.getPartitionIterator(split, context, projection)
+    proxy.getPartitionIterator(split, context, filter, projection)
   }
 
 }
