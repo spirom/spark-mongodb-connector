@@ -21,6 +21,7 @@ private[nsmc] class MongoConnector(databaseName: String, collectionName: String,
     val db = mongoClient.getDB(databaseName)
     val col = db(collectionName)
 
+    logDebug(s"filter: '${filter.toString}'")
     logDebug(s"keys: '${keys.toString}'")
     val cursor = col.find(filter, keys)
     val withMin = if (interval.min == null || interval.min.values.size == 0) cursor else cursor.addSpecial("$min", interval.min)

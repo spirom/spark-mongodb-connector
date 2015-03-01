@@ -2,7 +2,7 @@ package nsmc.sql
 
 import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
-import org.apache.spark.sql.sources.Filter
+import org.apache.spark.sql.sources._
 
 class QueryGenerator {
 
@@ -16,9 +16,21 @@ class QueryGenerator {
     builder.result()
   }
 
+  private def convertFilter(mongoFilter: Filter) : Option[(String, Any)] = {
+    mongoFilter match {
+      case EqualTo(attr, v) => Some(attr, v)
+      case GreaterThan(attr, v) => None
+      case LessThan(attr, v) => None
+      case GreaterThanOrEqual(attr, v) => None
+      case LessThanOrEqual(attr, v) => None
+      case In(attr, vs) => None
+      case _ => None
+    }
+  }
+
   def makeFilter(pushedFilters: Array[Filter]) : DBObject = {
     val builder = MongoDBObject.newBuilder
-
+    pushedFilters.map(convertFilter).flatten.foreach(p => builder += p)
     builder.result()
   }
 }
