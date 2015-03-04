@@ -19,11 +19,11 @@ class QueryGenerator {
   private def convertFilter(mongoFilter: Filter) : Option[(String, Any)] = {
     mongoFilter match {
       case EqualTo(attr, v) => Some(attr, v)
-      case GreaterThan(attr, v) => None
-      case LessThan(attr, v) => None
-      case GreaterThanOrEqual(attr, v) => None
-      case LessThanOrEqual(attr, v) => None
-      case In(attr, vs) => None
+      case GreaterThan(attr, v) => Some(attr, MongoDBObject("$gt" -> v))
+      case LessThan(attr, v) => Some(attr, MongoDBObject("$lt" -> v))
+      case GreaterThanOrEqual(attr, v) => Some(attr, MongoDBObject("$gte" -> v))
+      case LessThanOrEqual(attr, v) => Some(attr, MongoDBObject("$lte" -> v))
+      case In(attr, vs) => Some(attr, MongoDBObject("$in" -> vs))
       case _ => None
     }
   }
