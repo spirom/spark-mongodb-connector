@@ -7,7 +7,7 @@ import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{Matchers, FlatSpec}
 
 class RegistrationTests extends FlatSpec with Matchers {
-"a single registration" should "support multiple queries" in {
+  "a single registration" should "support multiple queries" in {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
@@ -60,4 +60,8 @@ class RegistrationTests extends FlatSpec with Matchers {
       sc.stop()
     }
   }
+
+  // TODO: test registration that specifis schema
+
+  // TODO: test SQLContext.dropTempTable()
 }

@@ -10,9 +10,9 @@ import nsmc.rdd.{CollectionProxy, SQLMongoRDD}
 
 import org.apache.spark.sql.types._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{DataFrame, SQLContext}
 import org.apache.spark.sql.catalyst.expressions.Row
-import org.apache.spark.sql.sources.{BaseRelation, Filter, PrunedFilteredScan, RelationProvider}
+import org.apache.spark.sql.sources._
 
 import scala.collection.Iterator
 import scala.collection.immutable.HashMap
@@ -56,7 +56,7 @@ class InferenceWrapper(proxy: CollectionProxy) extends Serializable {
 
 case class MongoTableScan(database: String, collection: String)
                         (@transient val sqlContext: SQLContext)
-  extends BaseRelation with PrunedFilteredScan with Logging {
+  extends BaseRelation with PrunedFilteredScan with InsertableRelation with Logging {
 
   // TODO: make sure we clean up if there's an error
 
@@ -113,6 +113,11 @@ case class MongoTableScan(database: String, collection: String)
     val projected = allRows.map(r => RowProjector.projectRow(r, positionalMap, requiredColumns))
 
     projected
+  }
+
+  def insert(data: DataFrame, overwrite: Boolean): Unit = {
+    logDebug(s"Inserting into '$database'/'$collection' with overwrite=$overwrite")
+    proxy.insert(data, overwrite)
   }
 
 }

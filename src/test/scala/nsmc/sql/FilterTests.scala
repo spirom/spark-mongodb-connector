@@ -366,4 +366,6 @@ class FilterTests extends FlatSpec with Matchers {
       sc.stop()
     }
   }
+
+  // TODO: test unknown column
 }

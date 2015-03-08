@@ -4,6 +4,7 @@ import com.mongodb.{BasicDBObject, DBObject}
 import nsmc.Logging
 import nsmc.mongo.{CollectionConfig, MongoConnector}
 import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.{Partition, TaskContext}
 
 
@@ -49,6 +50,8 @@ class CollectionProxy(val collectionConfig: CollectionConfig) extends Logging wi
     iter
   }
 
+  def insert(data: DataFrame, overwrite: Boolean): Unit = {
 
+  }
 
 }
