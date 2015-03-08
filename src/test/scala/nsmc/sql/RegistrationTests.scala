@@ -2,7 +2,7 @@ package nsmc.sql
 
 import nsmc.TestConfig
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.catalyst.types.{IntegerType, StringType, StructField}
+import org.apache.spark.sql.types._
 import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{Matchers, FlatSpec}
 

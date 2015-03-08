@@ -4,7 +4,7 @@ import java.util.Date
 
 import com.mongodb.casbah.Imports._
 import nsmc.conversion.SchemaAccumulator
-import org.apache.spark.sql.catalyst.types._
+import org.apache.spark.sql.types._
 
 import scala.collection.immutable.HashMap
 

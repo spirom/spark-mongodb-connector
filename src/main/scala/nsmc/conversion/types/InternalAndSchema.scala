@@ -1,7 +1,6 @@
 package nsmc.conversion.types
 
-import org.apache.spark.sql._
-import org.apache.spark.sql.catalyst.types.StructType
+import org.apache.spark.sql.types._
 
 
 class InternalAndSchema {

@@ -4,8 +4,8 @@ import java.util.Date
 
 import com.mongodb.casbah.Imports._
 import nsmc.TestConfig
-import org.apache.spark.sql.catalyst.types._
-import org.apache.spark.sql.{SQLContext, StructType}
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.bson.types.BSONTimestamp
 import org.scalatest.{FlatSpec, Matchers}

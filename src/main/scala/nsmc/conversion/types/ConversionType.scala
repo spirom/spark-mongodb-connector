@@ -1,6 +1,6 @@
 package nsmc.conversion.types
 
-import org.apache.spark.sql.catalyst.types.DataType
+import org.apache.spark.sql.types._
 
 import scala.collection.immutable.HashMap
 

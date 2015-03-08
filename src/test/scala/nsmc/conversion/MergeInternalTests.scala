@@ -2,7 +2,8 @@ package nsmc.conversion
 
 import nsmc.conversion.types._
 
-import org.apache.spark.sql.catalyst.types.{IntegerType, StringType}
+import org.apache.spark.sql.types._
+
 import org.scalatest.{Matchers, FlatSpec}
 
 import scala.collection.immutable.HashMap

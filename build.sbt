@@ -6,6 +6,10 @@ organization := "com.github.spirom"
 
 scalaVersion := "2.10.4"
 
+// TODO: remove when Spark 1.3.0 is released
+resolvers +=
+  "SparkStaging" at "https://repository.apache.org/content/repositories/orgapachespark-1078"
+
 publishMavenStyle := true
 
 publishArtifact in Test := false
@@ -14,9 +18,9 @@ pomIncludeRepository := { x => false }
 
 // core dependencies
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.2.0"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.0"
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.2.0"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0"
 
 libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 

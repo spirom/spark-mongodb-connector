@@ -2,8 +2,7 @@ package nsmc.conversion
 
 import nsmc.conversion.types._
 
-import com.mongodb.casbah.Imports._
-import org.apache.spark.sql._
+import org.apache.spark.sql.types._
 
 import scala.collection.immutable.HashMap
 

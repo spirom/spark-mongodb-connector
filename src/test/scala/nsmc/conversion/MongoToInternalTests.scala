@@ -3,7 +3,8 @@ package nsmc.conversion
 import nsmc.conversion.types.{SequenceType, MongoAndInternal, StructureType, AtomicType}
 
 import com.mongodb.casbah.Imports._
-import org.apache.spark.sql.catalyst.types._
+import org.apache.spark.sql.types._
+
 import org.scalatest._
 
 class MongoToInternalTests extends FlatSpec with Matchers {
