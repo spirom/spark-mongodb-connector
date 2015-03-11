@@ -2,6 +2,8 @@ package nsmc.conversion.types
 
 import org.apache.spark.sql.types._
 
+import scala.collection.immutable.HashMap
+
 
 class InternalAndSchema {
 
@@ -23,6 +25,21 @@ object InternalAndSchema {
 
   private def makeField(k:String, t: DataType) : StructField = {
     StructField(k, t, nullable = true)
+  }
+
+  def toInternal(schema: Seq[StructField]) : ConversionType = {
+    val convertedPairs = schema.toSeq.map(toInternal)
+    val hm = HashMap[String, ConversionType](convertedPairs:_*)
+    new StructureType(hm)
+  }
+
+  private def toInternal(sf: StructField) : (String, ConversionType) = {
+    sf.dataType match {
+      // TODO: leaving out some of the atomic types
+      case StringType => (sf.name, AtomicType(StringType))
+      case IntegerType => (sf.name, AtomicType(IntegerType))
+      case StructType(s) => (sf.name, toInternal(s))
+    }
   }
 
 }

@@ -7,7 +7,7 @@ import org.apache.spark.sql.types.{IntegerType, StringType, StructField}
 import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{Matchers, FlatSpec}
 
-class InsertTests extends FlatSpec with Matchers {
+class InsertIntoTests extends FlatSpec with Matchers {
   "inserting into a populated table" should "should produce the right table" in {
 
     val mongoClient = MongoClient(TestConfig.mongodHost, TestConfig.mongodPort.toInt)
@@ -48,7 +48,7 @@ class InsertTests extends FlatSpec with Matchers {
 
       sqlContext.sql(
         s"""
-        |INSERT INTO TABLE toTable SELECT _id, key, s FROM fromTable
+        |INSERT INTO TABLE toTable SELECT _id, key, s FROM fromTable WHERE key <= 1000
       """.stripMargin)
 
       val data =
@@ -61,14 +61,13 @@ class InsertTests extends FlatSpec with Matchers {
       fields(2) should be (new StructField("s", StringType, true))
 
 
-      data.count() should be(300000)
+      data.count() should be(1001)
       val firstRec = data.first()
 
       firstRec.size should be (3)
       // don't match the id
-      firstRec.getString(1) should be ("V1")
-      firstRec.getInt(2) should be (1)
-
+      firstRec.getInt(1) should be (0)
+      firstRec.getString(2) should be ("V0")
 
     } finally {
       sc.stop()

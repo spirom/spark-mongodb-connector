@@ -1,9 +1,14 @@
 package nsmc.rdd
 
 import com.mongodb.{BasicDBObject, DBObject}
+
 import nsmc.Logging
-import nsmc.mongo.{CollectionConfig, MongoConnector}
+import nsmc.mongo.Destination
+import nsmc.conversion.types.SchemaToMongo
+import nsmc.mongo.{Destination, MongoInterval, CollectionConfig, MongoConnector}
 import nsmc.rdd.partitioner.{MongoRDDPartition, MongoRDDPartitioner}
+
+
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.{Partition, TaskContext}
 
@@ -50,8 +55,18 @@ class CollectionProxy(val collectionConfig: CollectionConfig) extends Logging wi
     iter
   }
 
+  // for now insert into MongoDB sequentially
   def insert(data: DataFrame, overwrite: Boolean): Unit = {
-
+    val interval = MongoInterval(Destination(collectionConfig.connectorConf))
+    val mongoConnector = new MongoConnector(collectionConfig.databaseName, collectionConfig.collectionName, interval)
+    try {
+      val recIter = data.rdd.collect().toIterator.map(r =>
+        SchemaToMongo.getMongoRecord(data.schema, r)
+      )
+      mongoConnector.insert(recIter, overwrite)
+    } finally {
+      mongoConnector.close()
+    }
   }
 
 }

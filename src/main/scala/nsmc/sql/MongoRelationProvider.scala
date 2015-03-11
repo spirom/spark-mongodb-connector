@@ -2,7 +2,7 @@ package nsmc.sql
 
 import com.mongodb.DBObject
 import nsmc._
-import nsmc.conversion.types.{StructureType}
+import nsmc.conversion.types.{InternalAndSchema, StructureType}
 import nsmc.conversion.{RecordConverter, SchemaAccumulator}
 import nsmc.mongo._
 import nsmc.rdd.partitioner.MongoRDDPartition
@@ -54,7 +54,7 @@ class InferenceWrapper(proxy: CollectionProxy) extends Serializable {
   }
 }
 
-case class MongoTableScan(database: String, collection: String)
+case class MongoTableScan(database: String, collection: String, suppliedSchema: Option[StructType])
                         (@transient val sqlContext: SQLContext)
   extends BaseRelation with PrunedFilteredScan with InsertableRelation with Logging {
 
@@ -63,32 +63,42 @@ case class MongoTableScan(database: String, collection: String)
   logInfo(s"Registering MongoDB collection '$collection' in database '$database'")
 
   // TODO: plumb indexedKeys
-  private val collectionConfig = new CollectionConfig(MongoConnectorConf(sqlContext.sparkContext.getConf), database, collection, Seq())
 
-  private val proxy = new CollectionProxy(collectionConfig)
+  val collectionConfig = new CollectionConfig(MongoConnectorConf(sqlContext.sparkContext.getConf), database, collection, Seq())
 
-  private val splits = proxy.getPartitions.map(s => s.asInstanceOf[MongoRDDPartition])
+  val proxy = new CollectionProxy(collectionConfig)
 
-  private val partitionRDD = sqlContext.sparkContext.parallelize(splits, splits.size)
+  val (inferredSchema, internalSchema) = suppliedSchema match
+  {
+    case None => {
+      val splits = proxy.getPartitions.map(s => s.asInstanceOf[MongoRDDPartition])
 
-  private val inference = new InferenceWrapper(proxy)
+      val partitionRDD = sqlContext.sparkContext.parallelize(splits, splits.size)
 
-  private val partitionSchemas = partitionRDD.map(inference.inferType)
+      val inference = new InferenceWrapper(proxy)
 
-  val partialSchemas = partitionSchemas.collect()
+      val partitionSchemas = partitionRDD.map(inference.inferType)
 
-  private val accum = new SchemaAccumulator()
-  accum.accumulate(partialSchemas.iterator)
+      val partialSchemas = partitionSchemas.collect()
 
-  private val inferredSchema = accum.getSchema
+      val accum = new SchemaAccumulator()
+      accum.accumulate(partialSchemas.iterator)
 
-  logDebug(s"Computed schema for collection '$collection' in database '$database'")
+      val inferredSchema = accum.getSchema
 
-  private val internalSchema = accum.getInternal
+      logDebug(s"Computed schema for collection '$collection' in database '$database'")
+
+      val internalSchema = accum.getInternal
+
+      (inferredSchema, internalSchema)
+    }
+    case Some(tupleSchema) => {
+      val internalSchema = InternalAndSchema.toInternal(tupleSchema)
+      (tupleSchema, internalSchema)
+    }
+  }
 
   val schema: StructType = StructType(inferredSchema)
-
-
 
   private def makePositionalMap(fields: Seq[StructField]) : Map[String, Int] = {
     HashMap[String, Int](fields.map(f => f.name).zipWithIndex:_*)
@@ -122,9 +132,14 @@ case class MongoTableScan(database: String, collection: String)
 
 }
 
-class MongoRelationProvider extends RelationProvider {
+// supports both inferred and user-specified schema
+class MongoRelationProvider extends RelationProvider with SchemaRelationProvider {
   def createRelation(sqlContext: SQLContext, parameters: Map[String, String]) : BaseRelation = {
-    MongoTableScan(parameters("db"), parameters("collection"))(sqlContext)
+    MongoTableScan(parameters("db"), parameters("collection"), None)(sqlContext)
+  }
+
+  def createRelation(sqlContext: SQLContext, parameters: Map[String, String], schema: StructType) : BaseRelation = {
+    MongoTableScan(parameters("db"), parameters("collection"), Some(schema))(sqlContext)
   }
 }
 

@@ -61,7 +61,7 @@ class RegistrationTests extends FlatSpec with Matchers {
     }
   }
 
-  // TODO: test registration that specifis schema
+  // TODO: test registration that specifies schema
 
   // TODO: test SQLContext.dropTempTable()
 }

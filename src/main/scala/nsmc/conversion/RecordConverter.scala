@@ -1,8 +1,8 @@
 package nsmc.conversion
 
-import com.mongodb.casbah.Imports._
 import nsmc.conversion.types.{SequenceType, StructureType, ConversionType}
-import org.apache.spark.sql.catalyst.expressions.Row
+import org.apache.spark.sql.Row
+import com.mongodb.casbah.Imports._
 
 class RecordConverter(internalType: StructureType) extends Serializable {
 

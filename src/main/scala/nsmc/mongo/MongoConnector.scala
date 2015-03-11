@@ -36,6 +36,13 @@ private[nsmc] class MongoConnector(databaseName: String, collectionName: String,
     getData(filter, keys)
   }
 
+  def insert(recs: Iterator[DBObject], overwrite: Boolean) : Unit = {
+    val db = mongoClient.getDB(databaseName)
+    val col = db(collectionName)
+    if (overwrite) col.remove(new BasicDBObject())
+    recs.foreach(rec => col += rec)
+  }
+
   def close() : Unit = {
     mongoClient.close()
   }
