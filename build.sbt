@@ -6,10 +6,6 @@ organization := "com.github.spirom"
 
 scalaVersion := "2.10.4"
 
-// TODO: remove when Spark 1.3.0 is released
-resolvers +=
-  "SparkStaging" at "https://repository.apache.org/content/repositories/orgapachespark-1078"
-
 publishMavenStyle := true
 
 publishArtifact in Test := false
