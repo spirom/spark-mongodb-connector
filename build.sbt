@@ -1,6 +1,6 @@
 name := "spark-mongodb-connector"
 
-version := "0.6.0-SNAPSHOT"
+version := "0.5.1"
 
 organization := "com.github.spirom"
 
@@ -14,9 +14,9 @@ pomIncludeRepository := { x => false }
 
 // core dependencies
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.0"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.0" % "provided"
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0" % "provided"
 
 libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 
