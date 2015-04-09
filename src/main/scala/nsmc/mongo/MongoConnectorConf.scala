@@ -23,14 +23,14 @@ object MongoConnectorConf extends nsmc.Logging {
   val DefaultPort = 27017
   val DefaultSplitSize = 4
 
-  val ConnectionHostProperty = "nsmc.connection.host"
-  val ConnectionPortProperty = "nsmc.connection.port"
-  val ConnectionUserProperty = "nsmc.user"
-  val ConnectionPasswordProperty = "nsmc.password"
-  val PartitioningSplitIndexedProperty = "nsmc.split.indexed.collections"
-  val PartitioningSplitSizeProperty = "nsmc.split.chunk.size"
-  val PartitioningDirectToShardsProperty = "nsmc.direct.to.shards"
-  val PartitioningUseShardChunksProperty = "nsmc.partition.on.shard.chunks"
+  val ConnectionHostProperty = "spark.nsmc.connection.host"
+  val ConnectionPortProperty = "spark.nsmc.connection.port"
+  val ConnectionUserProperty = "spark.nsmc.user"
+  val ConnectionPasswordProperty = "spark.nsmc.password"
+  val PartitioningSplitIndexedProperty = "spark.nsmc.split.indexed.collections"
+  val PartitioningSplitSizeProperty = "spark.nsmc.split.chunk.size"
+  val PartitioningDirectToShardsProperty = "spark.nsmc.direct.to.shards"
+  val PartitioningUseShardChunksProperty = "spark.nsmc.partition.on.shard.chunks"
 
 
   def apply(conf: SparkConf): MongoConnectorConf = {
