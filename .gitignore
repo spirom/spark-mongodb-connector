@@ -1,6 +1,9 @@
 *.class
 *.log
 
+# emacs on Linux
+*~
+
 # sbt specific
 .cache/
 .history/
