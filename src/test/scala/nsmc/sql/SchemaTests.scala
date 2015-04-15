@@ -16,8 +16,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -56,8 +56,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -92,8 +92,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -142,8 +142,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -193,8 +193,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -245,8 +245,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -309,8 +309,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
@@ -375,8 +375,8 @@ class SchemaTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)

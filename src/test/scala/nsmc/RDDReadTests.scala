@@ -14,8 +14,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.unknownHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.unknownHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
@@ -29,8 +29,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.unknownPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.unknownPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
@@ -44,8 +44,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection("UnknownDB", TestConfig.basicCollection)
 
@@ -59,8 +59,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.basicDB, "UnknownColl")
 
@@ -73,8 +73,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection[DBObject](TestConfig.basicDB,TestConfig.basicCollection)
 
@@ -91,10 +91,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
-        .set("nsmc.split.indexed.collections", "true")
-        .set("nsmc.split.chunk.size", "4")
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.split.indexed.collections", "true")
+        .set("spark.nsmc.split.chunk.size", "4")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq(("key", 1))
     val data = sc.mongoCollection(TestConfig.basicDB,
@@ -109,10 +109,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodHost)
-        .set("nsmc.connection.port", TestConfig.mongodPort)
-        .set("nsmc.split.indexed.collections", "true")
-        .set("nsmc.split.chunk.size", "4")
+        .set("spark.nsmc.connection.host", TestConfig.mongodHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodPort)
+        .set("spark.nsmc.split.indexed.collections", "true")
+        .set("spark.nsmc.split.chunk.size", "4")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq(("key", 1), ("s", -1))
     val data = sc.mongoCollection(TestConfig.basicDB,
@@ -127,10 +127,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongosHost)
-        .set("nsmc.connection.port", TestConfig.mongosPort)
-        .set("nsmc.partition.on.shard.chunks", "true")
-        .set("nsmc.direct.to.shards", "true")
+        .set("spark.nsmc.connection.host", TestConfig.mongosHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongosPort)
+        .set("spark.nsmc.partition.on.shard.chunks", "true")
+        .set("spark.nsmc.direct.to.shards", "true")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
@@ -145,10 +145,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongosHost)
-        .set("nsmc.connection.port", TestConfig.mongosPort)
-        .set("nsmc.partition.on.shard.chunks", "true")
-        .set("nsmc.direct.to.shards", "false")
+        .set("spark.nsmc.connection.host", TestConfig.mongosHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongosPort)
+        .set("spark.nsmc.partition.on.shard.chunks", "true")
+        .set("spark.nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
@@ -163,10 +163,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongosHost)
-        .set("nsmc.connection.port", TestConfig.mongosPort)
-        .set("nsmc.partition.on.shard.chunks", "false")
-        .set("nsmc.direct.to.shards", "false")
+        .set("spark.nsmc.connection.host", TestConfig.mongosHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongosPort)
+        .set("spark.nsmc.partition.on.shard.chunks", "false")
+        .set("spark.nsmc.direct.to.shards", "false")
     val sc = new SparkContext(conf)
     val indexedKeys = Seq(("key",1))
     val data = sc.mongoCollection(TestConfig.shardedDB,
@@ -181,10 +181,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
-        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
-        .set("nsmc.user", "reader")
-        .set("nsmc.password", "password")
+        .set("spark.nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("spark.nsmc.user", "reader")
+        .set("spark.nsmc.password", "password")
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
@@ -200,10 +200,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
-        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
-        .set("nsmc.user", "nobody")
-        .set("nsmc.password", "password")
+        .set("spark.nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("spark.nsmc.user", "nobody")
+        .set("spark.nsmc.password", "password")
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
@@ -219,8 +219,8 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
-        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("spark.nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodAuthPort)
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 
@@ -236,10 +236,10 @@ class RDDReadTests extends FlatSpec with Matchers {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", TestConfig.mongodAuthHost)
-        .set("nsmc.connection.port", TestConfig.mongodAuthPort)
-        .set("nsmc.user", "noroles")
-        .set("nsmc.password", "password")
+        .set("spark.nsmc.connection.host", TestConfig.mongodAuthHost)
+        .set("spark.nsmc.connection.port", TestConfig.mongodAuthPort)
+        .set("spark.nsmc.user", "noroles")
+        .set("spark.nsmc.password", "password")
     val sc = new SparkContext(conf)
     val data = sc.mongoCollection(TestConfig.authDB,TestConfig.authCollection)
 

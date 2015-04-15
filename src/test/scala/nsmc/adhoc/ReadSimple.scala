@@ -11,8 +11,8 @@ object ReadSimple {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", "localhost")
-        .set("nsmc.connection.port", "27030")
+        .set("spark.nsmc.connection.host", "localhost")
+        .set("spark.nsmc.connection.port", "27030")
     val mcc = MongoConnectorConf(conf)
     val ig = new IntervalGenerator(mcc.getDestination(), "test", "simple2")
     var tot = 0

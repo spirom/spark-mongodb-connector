@@ -11,8 +11,8 @@ object ReadShards {
     val conf =
       new SparkConf()
         .setAppName("MongoReader").setMaster("local[4]")
-        .set("nsmc.connection.host", "localhost")
-        .set("nsmc.connection.port", "27033")
+        .set("spark.nsmc.connection.host", "localhost")
+        .set("spark.nsmc.connection.port", "27033")
     val mcc = MongoConnectorConf(conf)
     val ig = new IntervalGenerator(mcc.getDestination(), "shardedtest", "one")
     var tot = 0

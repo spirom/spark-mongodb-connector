@@ -78,10 +78,10 @@ Then to actually read from a collection:
 
     val conf = new SparkConf()
         .setAppName("My MongoApp").setMaster("local[4]")
-        .set("nsmc.connection.host", "myMongoHost")
-        .set("nsmc.connection.port", "myMongoPort")
-        .set("nsmc.user", "yourUsernameHere")
-        .set("nsmc.password", "yourPasswordHere")
+        .set("spark.nsmc.connection.host", "myMongoHost")
+        .set("spark.nsmc.connection.port", "myMongoPort")
+        .set("spark.nsmc.user", "yourUsernameHere")
+        .set("spark.nsmc.password", "yourPasswordHere")
     val sc = new SparkContext(conf)
     val data: MongoRDD[DBObject] =
         sc.mongoCollection[DBObject]("myDB", "myCollection")
