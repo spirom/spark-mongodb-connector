@@ -21,7 +21,6 @@ Fore more details about this project, check the following blog posts:
  - Spark: 1.3.0
  - Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
-- Known to leak resources quite badly
 
 # Other Warnings
 
@@ -29,7 +28,7 @@ Fore more details about this project, check the following blog posts:
 
 # Release Status
 
-A pre-release alpha version (0.5.0) is available.
+A pre-release alpha version (0.5.2) is available.
 
 # Licensing
 
@@ -49,21 +48,21 @@ Add the following to your build.sbt for the latest _stable_ release:
 
     libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0"
 
-    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.5.0"
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.5.2"
 
 # Configuration
 
 
 | Setting | Meaning | Units | Default |
 |---------|---------|-------|---------|
-| nsmc.connection.host | MongoDB host or IP address | | localhost |
-| nsmc.connection.port | MongoDB port | | 27017 |
-| nsmc.user | MongoDB user name | | no authentication | 
-| nsmc.password | MongoDB password | | no authentication |
-| nsmc.split.indexed.collections | Should indexed collections be partitioned using MongoDB's [internal] splitVector command? | boolean | false |
-| nsmc.split.chunk.size | Maximum chunk size, in megabytes, passed to MongoDB's splitVector command, if used. | MB | 4 |
-| nsmc.partition.on.shard.chunks | Should collections that are already sharded in MongoDB retain this as their partitioning in Spark? If not, the entire collection will be read as a single Spark partition. | boolean | false |
-| nsmc.direct.to.shards | If sharding of collections is being observed, should the mongos server be bypassed? (Don't do this unless you understand MongoDB really well, or you may obtain incorrect results -- if MongoDB is rebalancing the shards when your query executes.) | boolean | false |
+| spark.nsmc.connection.host | MongoDB host or IP address | | localhost |
+| spark.nsmc.connection.port | MongoDB port | | 27017 |
+| spark.nsmc.user | MongoDB user name | | no authentication |
+| spark.nsmc.password | MongoDB password | | no authentication |
+| spark.nsmc.split.indexed.collections | Should indexed collections be partitioned using MongoDB's [internal] splitVector command? | boolean | false |
+| spark.nsmc.split.chunk.size | Maximum chunk size, in megabytes, passed to MongoDB's splitVector command, if used. | MB | 4 |
+| spark.nsmc.partition.on.shard.chunks | Should collections that are already sharded in MongoDB retain this as their partitioning in Spark? If not, the entire collection will be read as a single Spark partition. | boolean | false |
+| spark.nsmc.direct.to.shards | If sharding of collections is being observed, should the mongos server be bypassed? (Don't do this unless you understand MongoDB really well, or you may obtain incorrect results -- if MongoDB is rebalancing the shards when your query executes.) | boolean | false |
 
 
 # Usage from core Spark
@@ -105,6 +104,8 @@ Query the temporary table as follows
 
 | NSMC Release | Status | Apache Spark Release | Scala Version | Features Added |
 ---------------|--------|----------------------|---------------|----------------|
+| 0.5.2 | Alpha | 1.3.0 | 2.10 | Configuration parameters are prefixed with ".nsmc" to enable use of various Spark tools like the Thrift server and **spark-submit**. |
+| 0.5.1 | Alpha | 1.3.0 | 2.10 | Apache Spark dependency is marked as "provided", making it easier to create assemblies that include NSMC. |
 | 0.5.0 | Alpha | 1.3.0 | 2.10 | Spark 1.3.0 |
 | 0.4.1 | Alpha | 1.2.0 | 2.10 | Filter and Projection push-down for SPark SQL |
 | 0.4.0 | Alpha | 1.2.0 | 2.10 | Spark 1.2.0 and Spark SQL Support |
