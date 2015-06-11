@@ -12,8 +12,8 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
   "a flat object" should "have a flat type" in {
 
     val hm = HashMap[String, ConversionType](
-      "key" -> new AtomicType(StringType),
-      "val" -> new AtomicType(IntegerType)
+      "key" -> new nsmc.conversion.types.AtomicType(StringType),
+      "val" -> new nsmc.conversion.types.AtomicType(IntegerType)
     )
 
     val t = InternalAndSchema.toSchema(new StructureType(hm))
@@ -30,13 +30,13 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
   "a nested object" should "have a nested type" in {
 
     val ihm = HashMap[String, ConversionType](
-      "a" -> new AtomicType(IntegerType),
-      "b" -> new AtomicType(IntegerType),
-      "c" -> new AtomicType(StringType)
+      "a" -> new nsmc.conversion.types.AtomicType(IntegerType),
+      "b" -> new nsmc.conversion.types.AtomicType(IntegerType),
+      "c" -> new nsmc.conversion.types.AtomicType(StringType)
     )
 
     val hm = HashMap[String, ConversionType](
-      "key" -> new AtomicType(StringType),
+      "key" -> new nsmc.conversion.types.AtomicType(StringType),
       "val" -> new StructureType(ihm)
     )
 
@@ -66,7 +66,7 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
 
   "an atomic array object" should "have an atomic array type" in {
     val hm = HashMap[String, ConversionType](
-      "key" -> new SequenceType(new AtomicType(IntegerType))
+      "key" -> new SequenceType(new nsmc.conversion.types.AtomicType(IntegerType))
     )
 
     val t = InternalAndSchema.toSchema(new StructureType(hm))
@@ -80,7 +80,7 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
 
   "a nested atomic array object" should "have a nested atomic array type" in {
     val hm = HashMap[String, ConversionType](
-      "key" -> new SequenceType(new SequenceType(new AtomicType(StringType)))
+      "key" -> new SequenceType(new SequenceType(new nsmc.conversion.types.AtomicType(StringType)))
     )
 
     val t = InternalAndSchema.toSchema(new StructureType(hm))
@@ -94,9 +94,9 @@ class InternalToSchemaTests extends FlatSpec with Matchers {
 
   "an array of structures" should "have a array og structures type" in {
     val ihm = HashMap[String, ConversionType](
-      "a" -> new AtomicType(IntegerType),
-      "b" -> new AtomicType(IntegerType),
-      "c" -> new AtomicType(StringType)
+      "a" -> new nsmc.conversion.types.AtomicType(IntegerType),
+      "b" -> new nsmc.conversion.types.AtomicType(IntegerType),
+      "c" -> new nsmc.conversion.types.AtomicType(StringType)
     )
 
     val hm = HashMap[String, ConversionType](
