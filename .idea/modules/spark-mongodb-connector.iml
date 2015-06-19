@@ -15,8 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/main" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/test" type="java-test-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/resolution-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/../../target/streams" />
+      <excludeFolder url="file://$MODULE_DIR$/../../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -281,5 +280,6 @@
     <orderEntry type="library" scope="PROVIDED" name="SBT: oro:oro:2.0.8:jar" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="SBT: stax:stax-api:1.0.1:jar" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="SBT: xmlenc:xmlenc:0.52:jar" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="SBT: org.eclipse.jetty.orbit:javax.servlet:3.0.0.v201112011016:jar" level="project" />
   </component>
 </module>
