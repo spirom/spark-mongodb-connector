@@ -18,14 +18,18 @@ class QueryGenerator {
 
   private def convertFilter(mongoFilter: Filter) : Option[(String, Any)] = {
     mongoFilter match {
-      case EqualTo(attr, v) => Some(attr, v)
-      case GreaterThan(attr, v) => Some(attr, MongoDBObject("$gt" -> v))
-      case LessThan(attr, v) => Some(attr, MongoDBObject("$lt" -> v))
-      case GreaterThanOrEqual(attr, v) => Some(attr, MongoDBObject("$gte" -> v))
-      case LessThanOrEqual(attr, v) => Some(attr, MongoDBObject("$lte" -> v))
-      case In(attr, vs) => Some(attr, MongoDBObject("$in" -> vs))
+      case EqualTo(attr:String, v:Any) => Some(attr, convertUTF8(v))
+      case GreaterThan(attr, v) => Some(attr, MongoDBObject("$gt" -> convertUTF8(v)))
+      case LessThan(attr, v) => Some(attr, MongoDBObject("$lt" -> convertUTF8(v)))
+      case GreaterThanOrEqual(attr, v) => Some(attr, MongoDBObject("$gte" -> convertUTF8(v)))
+      case LessThanOrEqual(attr, v) => Some(attr, MongoDBObject("$lte" -> convertUTF8(v)))
+      case In(attr, vs) => Some(attr, MongoDBObject("$in" -> vs.map(convertUTF8(_))))
       case _ => None
     }
+  }
+
+  private def convertUTF8(value: Any) : Any = {
+    if (value.isInstanceOf[org.apache.spark.sql.types.UTF8String]) value.toString else value
   }
 
   def makeFilter(pushedFilters: Array[Filter]) : DBObject = {
