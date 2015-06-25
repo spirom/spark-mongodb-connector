@@ -18,7 +18,7 @@ Fore more details about this project, check the following blog posts:
 - Only tested with the following configurations:
  - MongoDB: 2.6
  - Scala: 2.10
- - Spark: 1.3.0
+ - Spark: 1.4.0
  - Casbah 2.7
 - Not tested with MongoDB's hash-based partitioning
 
@@ -28,7 +28,7 @@ Fore more details about this project, check the following blog posts:
 
 # Release Status
 
-A pre-release alpha version (0.5.2) is available.
+A pre-release alpha version (0.5.3) is available.
 
 # Licensing
 
