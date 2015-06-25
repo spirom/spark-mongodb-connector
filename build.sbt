@@ -1,6 +1,6 @@
 name := "spark-mongodb-connector"
 
-version := "0.6.0-SNAPSHOT"
+version := "0.5.3"
 
 organization := "com.github.spirom"
 
@@ -14,9 +14,9 @@ pomIncludeRepository := { x => false }
 
 // core dependencies
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.4.0" % "provided"
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.4.0" % "provided"
 
 libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 
@@ -25,6 +25,8 @@ libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 libraryDependencies += "de.flapdoodle.embed" % "de.flapdoodle.embed.mongo" % "1.46.1" % "test"
+
+parallelExecution in Test := false
 
 publishTo <<= version { v: String =>
   val nexus = "https://oss.sonatype.org/"

@@ -104,6 +104,7 @@ Query the temporary table as follows
 
 | NSMC Release | Status | Apache Spark Release | Scala Version | Features Added |
 ---------------|--------|----------------------|---------------|----------------|
+| 0.5.3 | Alpha | 1.4.0 | 2.10 | Spark 1.4.0 |
 | 0.5.2 | Alpha | 1.3.0 | 2.10 | Configuration parameters are prefixed with "spark." to enable use of various Spark tools like the Thrift server and **spark-submit**. |
 | 0.5.1 | Alpha | 1.3.0 | 2.10 | Apache Spark dependency is marked as "provided", making it easier to create assemblies that include NSMC. |
 | 0.5.0 | Alpha | 1.3.0 | 2.10 | Spark 1.3.0 |
