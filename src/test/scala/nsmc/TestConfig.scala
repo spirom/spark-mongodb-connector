@@ -8,13 +8,13 @@ object TestConfig {
   val unknownHost = "unknown"
   val unknownPort = "27040"
 
-  val mongosHost = "localhost"
+  val mongosHost = "dungeon"
   val mongosPort = "27033"
 
-  val mongodHost = "localhost"
+  val mongodHost = "dungeon"
   val mongodPort = "27030"
 
-  val mongodAuthHost = "localhost"
+  val mongodAuthHost = "dungeon"
   val mongodAuthPort = "27034"
 
   val basicDB = "test"
@@ -39,8 +39,7 @@ object TestConfig {
       db(authCollection).drop()
     }
     val col = db(authCollection)
-    for (i <- 1 to 1000)
-    {
+    for (i <- 1 to 1000) {
       col += MongoDBObject("key" -> 1) ++ ("name" -> ("K_" + i))
     }
   }
@@ -54,15 +53,14 @@ object TestConfig {
     }
     val col = db(doubleIndexedCollection)
 
-    for (i <- 1 to 300000)
-    {
+    for (i <- 1 to 300000) {
       col += MongoDBObject("key" -> i) ++ ("s" -> ("K_" + i))
     }
 
     col.ensureIndex(DBObject("key" -> 1, "s" -> -1))
   }
 
-  def main (args: Array[String]) {
+  def main(args: Array[String]) {
     makeDoubleIndexedCollection()
   }
 }

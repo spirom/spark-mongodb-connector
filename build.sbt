@@ -1,6 +1,6 @@
 name := "spark-mongodb-connector"
 
-version := "0.5.3"
+version := "0.6.0-SNAPSHOT"
 
 organization := "com.github.spirom"
 

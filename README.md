@@ -44,11 +44,11 @@ Add the following to your build.sbt for the latest _stable_ release:
 
     scalaVersion := "2.10.4" // any 2.10 is OK -- support for 2.11 coming soon
 
-    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.3.0"
+    libraryDependencies += "org.apache.spark" %% "spark-core" % "1.4.0" % "provided"
 
-    libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.3.0"
+    libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.4.0" % "provided"
 
-    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.5.2"
+    libraryDependencies += "com.github.spirom" %% "spark-mongodb-connector" % "0.5.3"
 
 # Configuration
 
