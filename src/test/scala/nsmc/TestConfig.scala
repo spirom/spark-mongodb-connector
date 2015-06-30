@@ -8,13 +8,13 @@ object TestConfig {
   val unknownHost = "unknown"
   val unknownPort = "27040"
 
-  val mongosHost = "dungeon"
+  val mongosHost = "pegasus"
   val mongosPort = "27033"
 
-  val mongodHost = "dungeon"
+  val mongodHost = "pegasus"
   val mongodPort = "27030"
 
-  val mongodAuthHost = "dungeon"
+  val mongodAuthHost = "pegasus"
   val mongodAuthPort = "27034"
 
   val basicDB = "test"
