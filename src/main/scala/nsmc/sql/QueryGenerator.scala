@@ -24,6 +24,7 @@ class QueryGenerator {
       case GreaterThanOrEqual(attr, v) => Some(attr, MongoDBObject("$gte" -> convertUTF8(v)))
       case LessThanOrEqual(attr, v) => Some(attr, MongoDBObject("$lte" -> convertUTF8(v)))
       case In(attr, vs) => Some(attr, MongoDBObject("$in" -> vs.map(convertUTF8(_))))
+      case IsNull(attr) => Some(attr, null)
       case _ => None
     }
   }

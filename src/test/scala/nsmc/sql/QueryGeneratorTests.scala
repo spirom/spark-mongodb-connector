@@ -2,7 +2,7 @@ package nsmc.sql
 
 import com.mongodb.casbah.Imports._
 import nsmc.TestConfig
-import org.apache.spark.sql.sources.{Filter, EqualTo}
+import org.apache.spark.sql.sources._
 import org.scalatest.{Matchers, FlatSpec}
 
 
@@ -16,11 +16,11 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
       val col = db(TestConfig.scratchCollection)
       col.drop()
-      col += MongoDBObject("f1" -> 1) ++ ("f2" -> 1.0) ++ ("f3" -> "S1")
-      col += MongoDBObject("f1" -> 2) ++ ("f2" -> 2.0) ++ ("f3" -> "S2")
+      col += MongoDBObject("f1" -> 1) ++ ("f2" -> 1.0) ++ ("f3" -> "S1") ++ ("f4" -> 1)
+      col += MongoDBObject("f1" -> 2) ++ ("f2" -> 2.0) ++ ("f3" -> "S2") ++ ("f4" -> null)
       col += MongoDBObject("f1" -> 3) ++ ("f2" -> 3.0) ++ ("f3" -> "S3")
-      col += MongoDBObject("f1" -> 4) ++ ("f2" -> 4.0) ++ ("f3" -> "S4")
-      col += MongoDBObject("f1" -> 5) ++ ("f2" -> 5.0) ++ ("f3" -> "S5")
+      col += MongoDBObject("f1" -> 4) ++ ("f2" -> 4.0) ++ ("f3" -> "S4") ++ ("f4" -> 4)
+      col += MongoDBObject("f1" -> 5) ++ ("f2" -> 5.0) ++ ("f3" -> "S5") ++ ("f4" -> 5)
       col
     } catch {
       case e: Exception => {
@@ -107,4 +107,135 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
+  "projecting one column with an 'in' filter" should "yield one column in two rows" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(In("f1", Array(2, 4)))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (2)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (2)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (4)
+
+    } finally {
+      close()
+    }
+
   }
+
+  "projecting one column with a '>' filter" should "yield one column in two rows" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(GreaterThan("f1", 3))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (2)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (4)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (5)
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting one column with a '>=' filter" should "yield one column in three rows" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(GreaterThanOrEqual("f1", 3))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (3)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (3)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (4)
+      results(2).keySet().size() should be (1)
+      results(2).get("f1") should be (5)
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting one column with a '<' filter" should "yield one column in two rows" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(LessThan("f1", 3))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (2)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (1)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (2)
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting one column with a '<=' filter" should "yield one column in three rows" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(LessThanOrEqual("f1", 3))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (3)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (1)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (2)
+      results(2).keySet().size() should be (1)
+      results(2).get("f1") should be (3)
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting two columns with a null filter" should "yield two rows with the right number of fields" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(IsNull("f4"))
+      val columns = Array("f1", "f4")
+
+      val results = query(filters, columns)
+
+      results.size should be (2)
+      results(0).keySet().size() should be (2)
+      results(0).get("f1") should be (2)
+      results(1).keySet().size() should be (1)
+      results(1).get("f1") should be (3)
+
+
+    } finally {
+      close()
+    }
+
+  }
+
+}
