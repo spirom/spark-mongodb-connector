@@ -88,7 +88,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with an equality filter" should "yield one column in one row" in new Builder {
+  "projecting one column with an equality filter" should
+    "yield one column in one row" in new Builder {
 
     try {
 
@@ -107,7 +108,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with an 'in' filter" should "yield one column in two rows" in new Builder {
+  "projecting one column with an 'in' filter" should
+    "yield one column in two rows" in new Builder {
 
     try {
 
@@ -128,7 +130,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with a '>' filter" should "yield one column in two rows" in new Builder {
+  "projecting one column with a '>' filter" should
+    "yield one column in two rows" in new Builder {
 
     try {
 
@@ -149,7 +152,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with a '>=' filter" should "yield one column in three rows" in new Builder {
+  "projecting one column with a '>=' filter" should
+    "yield one column in three rows" in new Builder {
 
     try {
 
@@ -172,7 +176,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with a '<' filter" should "yield one column in two rows" in new Builder {
+  "projecting one column with a '<' filter" should
+    "yield one column in two rows" in new Builder {
 
     try {
 
@@ -193,7 +198,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting one column with a '<=' filter" should "yield one column in three rows" in new Builder {
+  "projecting one column with a '<=' filter" should
+    "yield one column in three rows" in new Builder {
 
     try {
 
@@ -216,7 +222,8 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
-  "projecting two columns with a null filter" should "yield two rows with the right number of fields" in new Builder {
+  "projecting two columns with a null filter" should
+    "yield two rows with the right number of fields" in new Builder {
 
     try {
 
@@ -231,6 +238,51 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
       results(1).keySet().size() should be (1)
       results(1).get("f1") should be (3)
 
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting two columns with an And filter" should
+    "yields one row with the right fields" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(And(LessThan("f1", 4), GreaterThan("f2", 2.0)))
+      val columns = Array("f1", "f2")
+
+      val results = query(filters, columns)
+
+      results.size should be (1)
+      results(0).keySet().size() should be (2)
+      results(0).get("f1") should be (3)
+      results(0).get("f2") should be (3.0)
+
+    } finally {
+      close()
+    }
+
+  }
+
+  "projecting two columns with an Or filter" should
+    "yields two row with the right fields" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(Or(LessThan("f1", 2), GreaterThan("f2", 4.0)))
+      val columns = Array("f1", "f2")
+
+      val results = query(filters, columns)
+
+      results.size should be (2)
+      results(0).keySet().size() should be (2)
+      results(0).get("f1") should be (1)
+      results(0).get("f2") should be (1.0)
+      results(1).keySet().size() should be (2)
+      results(1).get("f1") should be (5)
+      results(1).get("f2") should be (5.0)
 
     } finally {
       close()

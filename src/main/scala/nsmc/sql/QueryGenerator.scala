@@ -24,6 +24,18 @@ class QueryGenerator {
       case GreaterThanOrEqual(attr, v) => Some(attr, MongoDBObject("$gte" -> convertUTF8(v)))
       case LessThanOrEqual(attr, v) => Some(attr, MongoDBObject("$lte" -> convertUTF8(v)))
       case In(attr, vs) => Some(attr, MongoDBObject("$in" -> vs.map(convertUTF8(_))))
+      case And(f1, f2) => {
+        val args = Array(f1, f2)
+        val convertedArgs = args.flatMap(convertFilter)
+        val objects = convertedArgs.map(p => MongoDBObject(p))
+        Some(("$and", objects))
+      }
+      case Or(f1, f2) => {
+        val args = Array(f1, f2)
+        val convertedArgs = args.flatMap(convertFilter)
+        val objects = convertedArgs.map(p => MongoDBObject(p))
+        Some(("$or", objects))
+      }
       case IsNull(attr) => Some(attr, null)
       case _ => None
     }
@@ -35,7 +47,7 @@ class QueryGenerator {
 
   def makeFilter(pushedFilters: Array[Filter]) : DBObject = {
     val builder = MongoDBObject.newBuilder
-    pushedFilters.map(convertFilter).flatten.foreach(p => builder += p)
+    pushedFilters.flatMap(convertFilter).foreach(p => builder += p)
     builder.result()
   }
 }
