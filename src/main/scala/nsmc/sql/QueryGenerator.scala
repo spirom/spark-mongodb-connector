@@ -36,6 +36,13 @@ class QueryGenerator {
         val objects = convertedArgs.map(p => MongoDBObject(p))
         Some(("$or", objects))
       }
+      case Not(f) => {
+        val converted = convertFilter(f)
+        converted match {
+          case Some(p: (String, Any))  => Some(("$nor", Array(MongoDBObject(p))))
+          case None => None
+        }
+      }
       case IsNull(attr) => Some(attr, null)
       case _ => None
     }

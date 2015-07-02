@@ -267,7 +267,7 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
   }
 
   "projecting two columns with an Or filter" should
-    "yields two row with the right fields" in new Builder {
+    "yields two rows with the right fields" in new Builder {
 
     try {
 
@@ -290,4 +290,23 @@ class QueryGeneratorTests extends FlatSpec with Matchers {
 
   }
 
+  "projecting two columns with a Not filter" should
+    "yields one row with the right fields" in new Builder {
+
+    try {
+
+      val filters : Array[Filter] = Array(Not(LessThan("f1", 5)))
+      val columns = Array("f1")
+
+      val results = query(filters, columns)
+
+      results.size should be (1)
+      results(0).keySet().size() should be (1)
+      results(0).get("f1") should be (5)
+
+    } finally {
+      close()
+    }
+
+  }
 }
