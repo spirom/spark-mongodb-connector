@@ -14,9 +14,9 @@ pomIncludeRepository := { x => false }
 
 // core dependencies
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.4.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.0" % "provided"
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.4.0" % "provided"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.5.0" % "provided"
 
 libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 
@@ -56,4 +56,6 @@ pomExtra :=
       <url>https://github.com/spirom</url>
     </developer>
   </developers>
+
+
 

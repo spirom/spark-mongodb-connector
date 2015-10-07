@@ -11,7 +11,7 @@ import nsmc.rdd.{CollectionProxy, SQLMongoRDD}
 import org.apache.spark.sql.types._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, SQLContext}
-import org.apache.spark.sql.catalyst.expressions.Row
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.sources._
 
 import scala.collection.Iterator

@@ -49,7 +49,7 @@ class QueryGenerator {
   }
 
   private def convertUTF8(value: Any) : Any = {
-    if (value.isInstanceOf[org.apache.spark.sql.types.UTF8String]) value.toString else value
+    if (value.isInstanceOf[org.apache.spark.unsafe.types.UTF8String]) value.toString else value
   }
 
   def makeFilter(pushedFilters: Array[Filter]) : DBObject = {
