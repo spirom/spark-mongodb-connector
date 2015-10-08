@@ -18,6 +18,9 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.0" % "provided"
 
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "1.5.0" % "provided"
 
+// Needed to work around problems in IntelliJ Idea
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.10" % "provided"
+
 libraryDependencies += "org.mongodb" %% "casbah" % "2.7.3"
 
 // testing stuff below here
