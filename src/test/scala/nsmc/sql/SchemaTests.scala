@@ -372,7 +372,9 @@ class SchemaTests extends FlatSpec with Matchers {
         ("f6" -> Array[Byte](1, 2, 3)) ++
         // ("f7" -> new BSONTimestamp(256, 2)) ++
         ("f7" -> 1) ++
-        ("f8" -> new Date(0))
+        ("f8" -> new java.sql.Date(10000)) ++
+        ("f9" -> new java.sql.Timestamp(20000)) ++
+        ("f10" -> new java.util.Date(30000))
     } finally {
       mongoClient.close()
     }
@@ -396,11 +398,11 @@ class SchemaTests extends FlatSpec with Matchers {
       """.stripMargin)
 
       val data =
-        sqlContext.sql("SELECT f1, f2, f3, f4, f5, f6, f7, f8 FROM dataTable")
+        sqlContext.sql("SELECT f1, f2, f3, f4, f5, f6, f7, f8, f9, f10 FROM dataTable")
 
       val fields = data.schema.fields
 
-      fields should have size (8)
+      fields should have size (10)
       fields(0) should be (new StructField("f1", IntegerType, true))
       fields(1) should be (new StructField("f2", DoubleType, true))
       fields(2) should be (new StructField("f3", StringType, true))
@@ -409,11 +411,14 @@ class SchemaTests extends FlatSpec with Matchers {
       fields(5) should be (new StructField("f6", BinaryType, true))
       //fields(6) should be (StructField("f7",StructType(List(StructField("inc",IntegerType,true), StructField("time",IntegerType,true))),true))
       fields(7) should be (new StructField("f8", TimestampType, true))
+      fields(8) should be (new StructField("f9", TimestampType, true))
+      fields(9) should be (new StructField("f10", TimestampType, true))
+
 
       val recs = data.collect()
       recs should have size (1)
       val first = recs(0)
-      first should have size (8)
+      first should have size (10)
       first(0) should be (1)
       first(1) should be (3.14)
       first(2) should be ("hello")
@@ -421,7 +426,9 @@ class SchemaTests extends FlatSpec with Matchers {
       first(4) should equal (5000000000L)
       first(5) should equal (Array[Byte](1, 2, 3))
       //first(6) should equal (new BSONTimestamp(256, 2))
-      first(7) should be (new Date(0))
+      first(7) should be (new java.sql.Timestamp(10000))
+      first(8) should be (new java.sql.Timestamp(20000))
+      first(9) should be (new java.sql.Timestamp(30000))
 
     } finally {
       sc.stop()

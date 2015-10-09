@@ -1,5 +1,9 @@
 package nsmc.conversion
 
+import java.sql
+import java.sql.{Timestamp, DatabaseMetaData}
+import java.util.Date
+
 import nsmc.conversion.types.{SequenceType, StructureType, ConversionType}
 import org.apache.spark.sql.Row
 import com.mongodb.casbah.Imports._
@@ -15,6 +19,7 @@ class RecordConverter(internalType: StructureType) extends Serializable {
       case o:BasicDBList => Seq(o.map(e => convert(e.asInstanceOf[AnyRef], fieldType.asInstanceOf[SequenceType].elementType)):_*)
       case o:DBObject => convert(o, fieldType.asInstanceOf[StructureType])
       case oid:ObjectId => oid.toHexString()
+      case d:Date => new Timestamp(d.getTime)
       case x => x
     }
   }
